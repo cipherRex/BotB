@@ -1,0 +1,59 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
+{
+    public class SwingRestResolver : CombatInstanceResolverBase
+    {
+
+        public SwingRestResolver(CombatSession Session) : base(Session)
+        { }
+
+        public override CombatResult Resolve(CombatMove OpponentMove)
+        {
+            return base.Resolve(OpponentMove);
+        }
+
+        /// <summary>
+        /// This Fighter SWINGS, Opponent Fighter (attempts to) REST
+        /// If Opponent Fighter has been dit during reat previously, 
+        /// takes additional damage
+        /// </summary>
+        /// <param name="thisFighterId"></param>
+        /// <param name="opponentFighterId"></param>
+        /// <returns></returns>
+        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
+        {
+            CombatResult combatResult = new CombatResult();
+
+            //get count of how may times Opponent Fighter has previously been hit (consecutively)
+            int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
+
+            //if no previous hits, them MINOR damage animations
+            if (previousSuccessfulStrikes == 0)
+            {
+                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_KICK;
+                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_GROINED;
+            }
+            //if there are previous consecutive hits, them MAJOR damage animations
+            else
+            {
+                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_CLEAVE;
+                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_CLEAVED;
+            }
+
+            //damage is base 2 plus previous consecutive hits
+            int totalOpponentDamage = -2 - previousSuccessfulStrikes;
+            combatResult.HPAdjustment[opponentFighterId] = totalOpponentDamage;
+
+            combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) - totalOpponentDamage;
+            combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+
+            return combatResult;
+        }
+
+
+    }
+}

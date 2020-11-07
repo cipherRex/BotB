@@ -24,27 +24,32 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                                     .Where(x => x.FighterId != opponentFighterId)
                                     .FirstOrDefault().FighterId;
 
-            CombatResult combatResult = new CombatResult();
+            return resolve(thisFighterId, opponentFighterId);
 
-            switch (OpponentMove.Action) 
-            {
-                case CombatEnums.SWING:
-                    return resolveForSwing(thisFighterId, opponentFighterId);
+            //CombatResult combatResult = new CombatResult();
 
-                case CombatEnums.BLOCK:
-                    return resolveForBlock(thisFighterId, opponentFighterId);
 
-                case CombatEnums.REST:
-                    return resolveForHeal(thisFighterId, opponentFighterId);
+            //switch (OpponentMove.Action) 
+            //{
+            //    case CombatEnums.SWING:
+            //        return resolveForSwing(thisFighterId, opponentFighterId);
 
-            }
+            //    case CombatEnums.BLOCK:
+            //        return resolveForBlock(thisFighterId, opponentFighterId);
 
-            return combatResult;
+            //    case CombatEnums.REST:
+            //        return resolveForHeal(thisFighterId, opponentFighterId);
+
+            //}
+
+            //return combatResult;
         }
-    
-        protected abstract CombatResult resolveForSwing(string ThisFighterId, string OpponentFighterId);
-        protected abstract CombatResult resolveForBlock(string ThisFighterId, string OpponentFighterId);
-        protected abstract CombatResult resolveForHeal(string ThisFighterId, string OpponentFighterId);
+
+        protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
+
+        //protected abstract CombatResult resolveForSwing(string ThisFighterId, string OpponentFighterId);
+        //protected abstract CombatResult resolveForBlock(string ThisFighterId, string OpponentFighterId);
+        //protected abstract CombatResult resolveForHeal(string ThisFighterId, string OpponentFighterId);
 
         /// <summary>
         /// Return the Hit Point total for fighter by calculating damage history
@@ -143,6 +148,42 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
         protected int numberPreviousSuccessfulBlocks(string thisFighterId, string opponentFighterId)
+        {
+            int ret = 0;
+
+            if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
+
+
+            for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
+            {
+                CombatRound combatRound = _combatSession.CombatRounds[i];
+
+                if (combatRound.Result != null)
+                {
+                    if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.BLOCK &&
+                        combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action == CombatEnums.SWING
+                    )
+                    {
+                        ret++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        /// <summary>
+        /// Gives the sequence count for how many times This Fighter has successfully Blocked
+        /// against Opponent Fighter (blocking a heal does not count)
+        /// </summary>
+        /// <param name="thisFighterId"></param>
+        /// <param name="opponentFighterId"></param>
+        /// <returns></returns>
+        protected int numberPreviousFalseBlocks(string thisFighterId, string opponentFighterId)
         {
             int ret = 0;
 
