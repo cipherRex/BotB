@@ -18,20 +18,24 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             return base.Resolve(OpponentMove);
         }
 
-        protected override CombatResult resolveForBlock(string ThisFighterId, string OpponentFighterId)
+        protected override CombatResult resolveForBlock(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
 
-            bool randomBool = new Random().Next(0, 2) > 0;
-            string randomWinnerFighterId = randomBool ? ThisFighterId : OpponentFighterId;
-            string randomLoserFighterId = randomBool ? OpponentFighterId : ThisFighterId;
+            int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
 
-            combatResult.CombatAnimationInstructions[randomWinnerFighterId].AnimCommand = AnimationCommand.AC_COUNTERPARRY;
-            combatResult.CombatAnimationInstructions[randomLoserFighterId].AnimCommand = AnimationCommand.AC_PARRY;
-            combatResult.HPAdjustment[randomLoserFighterId] = -1;
+            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_SWING;
+            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
 
-            combatResult.Comments = "Both knights swing. Random damage.";
-            
+            if (numberPreviousTimesBlocked > 1)
+            {
+                
+                
+            }
+
+
+      
+
             return combatResult;
         }
 
@@ -39,9 +43,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         {
             CombatResult combatResult = new CombatResult();
 
-            int numberPreviousSuccessfulStrikes = NumberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
+            int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
 
-            if (numberPreviousSuccessfulStrikes == 0)
+            if (previousSuccessfulStrikes == 0)
             {
                 combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_KICK;
                 combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_GROINED;
@@ -52,7 +56,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_CLEAVED;
             }
 
-            combatResult.HPAdjustment[opponentFighterId] = -2 - numberPreviousSuccessfulStrikes;
+            combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+
+            int totalOpponentDamage = -2 - previousSuccessfulStrikes;
+            combatResult.HPAdjustment[opponentFighterId] = totalOpponentDamage;
+            combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) - totalOpponentDamage;
 
             return combatResult;
         }
@@ -68,40 +76,14 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.CombatAnimationInstructions[randomWinnerFighterId].AnimCommand = AnimationCommand.AC_COUNTERPARRY;
             combatResult.CombatAnimationInstructions[randomLoserFighterId].AnimCommand = AnimationCommand.AC_PARRY;
             combatResult.HPAdjustment[randomLoserFighterId] = -1;
+            combatResult.TotalRunningHPs[randomWinnerFighterId] = totalHPs(randomWinnerFighterId);
+            combatResult.TotalRunningHPs[randomLoserFighterId] = totalHPs(randomLoserFighterId) - 1;
 
             combatResult.Comments = "Both knights swing. Random damage.";
 
             return combatResult;
         }
 
-        protected int NumberPreviousSuccessfulStrikes(string thisFighterId, string opponentFighterId)
-        {
-            int ret = 0;
-
-            if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
-
-
-            for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
-            {
-                CombatRound combatRound = _combatSession.CombatRounds[i];
-
-                if (combatRound.Result != null)
-                {
-                    if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.SWING &&
-                        combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action == CombatEnums.REST
-                    )
-                    {
-                        ret++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return ret;
-        }
 
     }
 }
