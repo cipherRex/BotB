@@ -172,7 +172,7 @@ namespace BotB.Shared.CombatManagement
                             combatResult.HPAdjustment[randomLoserFighterId] = -1;
 
                             combatResult.Comments = "Both knights swing. Random damage.";
-
+                             
                             break;
                         #endregion
 
