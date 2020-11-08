@@ -35,10 +35,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
             combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
 
-
             if (numTimesThisFighterHasBeenBlocked > 1)
             {
-                comments = comments + " Knight false blocked previoulsy, cannot block next turn";
+                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn", opponentFighterId);
                 combatResult.ShieldTaunt.Add(opponentFighterId);
                 //This Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(thisFighterId, CombatEnums.BLOCK));
@@ -48,7 +47,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             if (numTimesOpponentFighterHasBeenBlocked > 1)
             {
-                comments = comments + " Knight false blocked previoulsy, cannot block next turn";
+                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn", thisFighterId);
                 combatResult.ShieldTaunt.Add(thisFighterId);
                 //Opponent Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));

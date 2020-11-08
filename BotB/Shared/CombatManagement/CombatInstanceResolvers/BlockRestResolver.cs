@@ -35,7 +35,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             if (previousFalseBlocks > 0) 
             {
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>( thisFighterId, CombatEnums.BLOCK));
-                comments = "Player false blocks and cannot block next turn";
+                comments = string.Format("{0} false blocks and cannot block next turn", thisFighterId);
             }
 
             //get count of how may times Opponent Fighter has previously healed

@@ -17,63 +17,43 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         public ICombatInstanceResolver GetCombatResolver(List<CombatMove> Moves) 
         {
 
-            CombatInstanceResolverBase combatInstanceResolverBase = null;
+            const int FIRST_PLAYER = 0;
+            const int SECOND_PLAYER = 1;
 
-            switch (Moves[0].Action) 
+            if (Moves[FIRST_PLAYER].Action == CombatEnums.SWING && 
+                Moves[SECOND_PLAYER].Action == CombatEnums.SWING) 
             {
-                case CombatEnums.SWING:
-                    switch (Moves[1].Action) 
-                    {
-                        case CombatEnums.SWING:
-                            combatInstanceResolverBase = new SwingSwingResolver(_combatSession);
-                            break;
-
-                        case CombatEnums.BLOCK:
-                            combatInstanceResolverBase = new SwingBlockResolver(_combatSession);
-                            break;
-
-                        case CombatEnums.REST:
-                            combatInstanceResolverBase = new SwingRestResolver(_combatSession);
-                            break;
-                    }
-                    break;
-
-                case CombatEnums.BLOCK:
-                    switch (Moves[1].Action)
-                    {
-                        case CombatEnums.SWING:
-                            combatInstanceResolverBase = new SwingBlockResolver(_combatSession);
-                            break;
-
-                        case CombatEnums.BLOCK:
-                            combatInstanceResolverBase = new BlockBlockResolver(_combatSession);
-                            break;
-
-                        case CombatEnums.REST:
-                            combatInstanceResolverBase = new BlockRestResolver(_combatSession);
-                            break;
-                    }
-                    break;
-
-                case CombatEnums.REST:
-                    switch (Moves[1].Action)
-                    {
-                        case CombatEnums.SWING:
-                            combatInstanceResolverBase = new SwingRestResolver(_combatSession);
-                            break;
-
-                        case CombatEnums.BLOCK:
-                            combatInstanceResolverBase = new BlockRestResolver(_combatSession);
-                            break;
-
-                        case CombatEnums.REST:
-                            combatInstanceResolverBase = new RestRestResolver(_combatSession);
-                            break;
-                    }
-                    break;
+                return new SwingSwingResolver(_combatSession);
             }
-
-            return combatInstanceResolverBase;
+            else if (Moves[FIRST_PLAYER].Action == CombatEnums.SWING &&
+                Moves[SECOND_PLAYER].Action == CombatEnums.BLOCK) 
+            {
+                return new SwingBlockResolver(_combatSession);
+            }
+            else if (Moves[FIRST_PLAYER].Action == CombatEnums.SWING &&
+                Moves[SECOND_PLAYER].Action == CombatEnums.REST)
+            {
+                return new SwingRestResolver(_combatSession);
+            }
+            else if (Moves[FIRST_PLAYER].Action == CombatEnums.BLOCK &&
+                Moves[SECOND_PLAYER].Action == CombatEnums.BLOCK)
+            {
+                return new BlockBlockResolver(_combatSession);
+            }
+            else if (Moves[FIRST_PLAYER].Action == CombatEnums.BLOCK &&
+                Moves[SECOND_PLAYER].Action == CombatEnums.REST)
+            {
+                return new BlockRestResolver(_combatSession);
+            }
+            else if (Moves[FIRST_PLAYER].Action == CombatEnums.REST &&
+                Moves[SECOND_PLAYER].Action == CombatEnums.REST)
+            {
+                return new RestRestResolver(_combatSession);
+            }
+            else 
+            {
+                throw new Exception("Unknown combat pattern: ");
+            }
 
         }
     }

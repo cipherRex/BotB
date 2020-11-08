@@ -8,8 +8,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
     public abstract class CombatInstanceResolverBase: ICombatInstanceResolver
     {
         protected CombatSession _combatSession;
-        //protected string _thisFighterId = "";
-        //protected string _opponentFighterId = "";
 
         public CombatInstanceResolverBase(CombatSession Session) 
         {
@@ -26,30 +24,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             return resolve(thisFighterId, opponentFighterId);
 
-            //CombatResult combatResult = new CombatResult();
-
-
-            //switch (OpponentMove.Action) 
-            //{
-            //    case CombatEnums.SWING:
-            //        return resolveForSwing(thisFighterId, opponentFighterId);
-
-            //    case CombatEnums.BLOCK:
-            //        return resolveForBlock(thisFighterId, opponentFighterId);
-
-            //    case CombatEnums.REST:
-            //        return resolveForHeal(thisFighterId, opponentFighterId);
-
-            //}
-
-            //return combatResult;
         }
 
         protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
-
-        //protected abstract CombatResult resolveForSwing(string ThisFighterId, string OpponentFighterId);
-        //protected abstract CombatResult resolveForBlock(string ThisFighterId, string OpponentFighterId);
-        //protected abstract CombatResult resolveForHeal(string ThisFighterId, string OpponentFighterId);
 
         /// <summary>
         /// Return the Hit Point total for fighter by calculating damage history

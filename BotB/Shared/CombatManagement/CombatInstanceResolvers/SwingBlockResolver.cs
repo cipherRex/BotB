@@ -38,7 +38,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //add flag to signal recoil animation
             combatResult.ShieldRecoil.Add(opponentFighterId);
 
-            comments = "Knight blocks.";
+            comments = string.Format("{0} blocks.", opponentFighterId);
 
             //If This Player was blocked previously then trigger taunting animation and restrict next move:
             if (numberPreviousTimesBlocked > 1)
@@ -49,7 +49,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 //So opponent cant block
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));
 
-                comments = comments + " Attacker cannot swing next turn, so defender cannot use shield";
+                comments = comments + string.Format(" {0} cannot swing next turn, so {1} cannot use shield", thisFighterId, opponentFighterId);
             }
 
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
@@ -57,10 +57,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             combatResult.Comments = comments;
 
-
             return combatResult;
         }
-
-
     }
 }
