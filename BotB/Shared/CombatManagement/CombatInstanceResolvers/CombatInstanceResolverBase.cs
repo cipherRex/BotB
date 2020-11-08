@@ -17,11 +17,42 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         public virtual CombatResult Resolve(CombatMove OpponentMove) 
         {
 
+            int MAXIMUM_HEALTH = 15;
+
             string opponentFighterId = OpponentMove.FighterId;
             string thisFighterId = otherFighterId(opponentFighterId);
 
-            return resolve(thisFighterId, opponentFighterId);
+            CombatResult combatResult = resolve(thisFighterId, opponentFighterId);
 
+            if (combatResult.HPAdjustment.ContainsKey(thisFighterId))
+            {
+                combatResult.HPAdjustment[thisFighterId] =
+                    trimExecHpAdjustment(combatResult.HPAdjustment[thisFighterId],
+                                        combatResult.TotalRunningHPs[thisFighterId],
+                                        MAXIMUM_HEALTH);
+            }
+
+            if (combatResult.HPAdjustment.ContainsKey(opponentFighterId))
+            {
+                combatResult.HPAdjustment[opponentFighterId] =
+                    trimExecHpAdjustment(combatResult.HPAdjustment[opponentFighterId],
+                                        combatResult.TotalRunningHPs[opponentFighterId],
+                                        MAXIMUM_HEALTH);
+            }
+
+            return combatResult;
+        }
+
+        private int trimExecHpAdjustment(int adjustment, int currentTotal, int maxPoints)
+        {
+            if (adjustment + currentTotal <= maxPoints) 
+            {
+                return adjustment;
+            }
+            else 
+            {
+                return adjustment - ((currentTotal + adjustment) - maxPoints);
+            }
         }
 
         /// <summary>
@@ -72,7 +103,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string opponentFighterId = otherFighterId(thisFighterId);
 
             if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
-
 
             for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
             {
