@@ -4,16 +4,57 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>BotB</title>
+    <title>IntoTheArena</title>
     <base href="/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
-    <link href="manifest.json" rel="manifest" />
-    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.rawgit.com/prashantchaudhary/ddslick/master/jquery.ddslick.min.js"></script>
+
+    <script type="text/javascript" src="/Scripts/_intoTheArena.js"></script>
+
+    <script src="webGl/TemplateData/UnityProgress.js"></script>
+    <script src="webGl/Build/UnityLoader.js"></script>
+
 </head>
 
 <body>
     <app>Loading...</app>
+
+    <style>
+        .wrapper {
+            width: 960px;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            padding: 3px;
+            border-radius: 3px;
+        }
+
+        .progress-bar-fill {
+            height: 22px;
+            display: block;
+            background-color: #33cc33;
+            border-radius: 3px;
+            width: 0;
+            transition: width 500ms ease-in-out;
+        }
+    </style>
+
+    <!--<app>
+        <div class="wrapper">
+            <div class="progress-bar">
+                <span class="progress-bar-fill"></span>
+            </div>
+        </div>
+    </app>-->
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -21,8 +62,15 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
+
     <script src="_framework/blazor.webassembly.js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js');</script>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <script src="/dist/jquery.ddslick.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+
 </body>
 
 </html>

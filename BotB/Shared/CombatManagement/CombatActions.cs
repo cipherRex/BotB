@@ -11,7 +11,7 @@ namespace BotB.Shared.CombatManagement
 
     public enum CombatActions
     {
-//        UNASSIGNED = 0,
+        UNASSIGNED = 0,
         SWING = 1,
         BLOCK = 2,
         REST = 3

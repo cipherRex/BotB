@@ -16,6 +16,8 @@ namespace BotB.Shared.CombatManagement
         {
             _moves = PlayerMoves;
         }
+
+
     }
 
 }
