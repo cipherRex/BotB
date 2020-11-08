@@ -42,11 +42,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.TotalRunningHPs[randomWinnerFighterId] = totalHPs(randomWinnerFighterId);
             combatResult.TotalRunningHPs[randomLoserFighterId] = totalHPs(randomLoserFighterId) - 1;
 
-            combatResult.Comments = "Both knights swing. Random damage.";
+            combatResult.Comments = string.Format("Both knights swing. {0} counterparries and {1} takes damage.", thisFighterId, randomLoserFighterId) ;
 
             return combatResult;
         }
-
-
     }
 }

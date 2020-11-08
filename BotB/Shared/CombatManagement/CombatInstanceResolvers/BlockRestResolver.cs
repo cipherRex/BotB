@@ -28,12 +28,14 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
+            string comments = "Player heals.";
 
             //get count of how may times This Fighter has been previously false blocked
             int previousFalseBlocks = numberPreviousFalseBlocks(thisFighterId, opponentFighterId);
             if (previousFalseBlocks > 0) 
             {
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>( thisFighterId, CombatEnums.BLOCK));
+                comments = "Player false blocks and cannot block next turn";
             }
 
             //get count of how may times Opponent Fighter has previously healed
@@ -48,6 +50,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalHealing;
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+
+            combatResult.Comments = comments;
 
             return combatResult;
         }

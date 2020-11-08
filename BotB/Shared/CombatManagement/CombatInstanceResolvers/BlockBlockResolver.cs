@@ -27,7 +27,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
-
+            string comments = "Both knights block.";
 
             int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId, thisFighterId);
             int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
@@ -38,6 +38,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             if (numTimesThisFighterHasBeenBlocked > 1)
             {
+                comments = comments + " Knight false blocked previoulsy, cannot block next turn";
                 combatResult.ShieldTaunt.Add(opponentFighterId);
                 //This Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(thisFighterId, CombatEnums.BLOCK));
@@ -47,6 +48,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             if (numTimesOpponentFighterHasBeenBlocked > 1)
             {
+                comments = comments + " Knight false blocked previoulsy, cannot block next turn";
                 combatResult.ShieldTaunt.Add(thisFighterId);
                 //Opponent Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));
@@ -56,6 +58,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
             combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId);
+
+            combatResult.Comments = comments;
 
             return combatResult;
         }

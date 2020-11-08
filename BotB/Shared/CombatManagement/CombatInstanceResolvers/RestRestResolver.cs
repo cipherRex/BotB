@@ -43,6 +43,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId) + totalThisHealPoints;
             combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalOpponentHealPoints;
 
+            combatResult.Comments = "Both knights heal.";
+
             return combatResult;
         }
     }

@@ -27,6 +27,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
+            string comments = "";
 
             //get count of how may times Opponent Fighter has previously been blocked (consecutively)
             int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
@@ -37,6 +38,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //add flag to signal recoil animation
             combatResult.ShieldRecoil.Add(opponentFighterId);
 
+            comments = "Knight blocks.";
+
             //If This Player was blocked previously then trigger taunting animation and restrict next move:
             if (numberPreviousTimesBlocked > 1)
             {
@@ -45,10 +48,15 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(thisFighterId, CombatEnums.SWING));
                 //So opponent cant block
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));
+
+                comments = comments + " Attacker cannot swing next turn, so defender cannot use shield";
             }
 
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
             combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId);
+
+            combatResult.Comments = comments;
+
 
             return combatResult;
         }

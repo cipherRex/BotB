@@ -31,17 +31,23 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //get count of how may times Opponent Fighter has previously been hit (consecutively)
             int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
 
-            //if no previous hits, them MINOR damage animations
+            //if no previous hits then MINOR damage animations
             if (previousSuccessfulStrikes == 0)
             {
                 combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_KICK;
                 combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_GROINED;
+
+                combatResult.Comments = string.Format("{0} takes damage.", opponentFighterId);
+
             }
             //if there are previous consecutive hits, them MAJOR damage animations
             else
             {
                 combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_CLEAVE;
                 combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_CLEAVED;
+
+                combatResult.Comments = string.Format("{0} takes lots of damage.", opponentFighterId);
+
             }
 
             //damage is base 2 plus previous consecutive hits
@@ -50,6 +56,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) - totalOpponentDamage;
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+
 
             return combatResult;
         }
