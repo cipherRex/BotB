@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BotB.Shared.CombatManagement.CombatHistoryResolvers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,10 +28,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
+            ICombatHistoryResolver successfulStrikeHistoryResolver = new SuccessfulStrikeHistoryResolver(_combatSession);
 
             //get count of how may times Opponent Fighter has previously been hit (consecutively)
             //int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
-            int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId);
+            //int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId);
+            int previousSuccessfulStrikes = successfulStrikeHistoryResolver.Resolve(thisFighterId);
 
             //if no previous hits then MINOR damage animations
             if (previousSuccessfulStrikes == 0)

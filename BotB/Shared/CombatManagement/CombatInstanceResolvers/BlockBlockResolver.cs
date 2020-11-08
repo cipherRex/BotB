@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BotB.Shared.CombatManagement.CombatHistoryResolvers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,17 +30,21 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             CombatResult combatResult = new CombatResult();
             string comments = "Both knights block.";
 
+            ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
+
             //int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId, thisFighterId);
             //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
-            int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId);
-            int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
+            //int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId);
+            //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
+            int numTimesThisFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(opponentFighterId);
+            int numTimesOpponentFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
 
             combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
             combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
 
             if (numTimesThisFighterHasBeenBlocked > 1)
             {
-                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn", opponentFighterId);
+                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", opponentFighterId);
                 combatResult.ShieldTaunt.Add(opponentFighterId);
                 //This Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(thisFighterId, CombatEnums.BLOCK));
@@ -49,7 +54,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             if (numTimesOpponentFighterHasBeenBlocked > 1)
             {
-                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn", thisFighterId);
+                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", thisFighterId);
                 combatResult.ShieldTaunt.Add(thisFighterId);
                 //Opponent Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));

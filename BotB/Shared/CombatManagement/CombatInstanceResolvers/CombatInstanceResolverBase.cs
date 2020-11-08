@@ -88,157 +88,161 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
         }
 
-        /// <summary>
-        /// Gives the sequence count for how many times This Fighter has successfully scored
-        /// against Opponent Fighter (counterparry does not count as a score)
-        /// </summary>
-        /// <param name="thisFighterId"></param>
-        /// <param name="opponentFighterId"></param>
-        /// <returns></returns>
-        //protected int numberPreviousSuccessfulStrikes(string thisFighterId, string opponentFighterId)
-        protected int numberPreviousSuccessfulStrikes(string thisFighterId)
-        {
-            int ret = 0;
-
-            string opponentFighterId = otherFighterId(thisFighterId);
-
-            if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
-
-            for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
-            {
-                CombatRound combatRound = _combatSession.CombatRounds[i];
-
-                if (combatRound.Result != null)
-                {
-                    if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.SWING &&
-                        combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action == CombatEnums.REST
-                    )
-                    {
-                        ret++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return ret;
-        }
-
-        /// <summary>
-        /// Gives the sequence count for how many times This Fighter has successfully healed
-        /// </summary>
-        /// <param name="thisFighterId"></param>
-        /// <param name="opponentFighterId"></param>
-        /// <returns></returns>
-        //protected int numberPreviousSuccessfulHeals(string thisFighterId, string opponentFighterId)
-        protected int numberPreviousSuccessfulHeals(string thisFighterId)
-        {
-            int ret = 0;
-
-            string opponentFighterId = otherFighterId(thisFighterId);
-
-            if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 
 
-            for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
-            {
-                CombatRound combatRound = _combatSession.CombatRounds[i];
+        ///// <summary>
+        ///// Gives the sequence count for how many times This Fighter has successfully scored
+        ///// against Opponent Fighter (counterparry does not count as a score)
+        ///// </summary>
+        ///// <param name="thisFighterId"></param>
+        ///// <param name="opponentFighterId"></param>
+        ///// <returns></returns>
+        ////protected int numberPreviousSuccessfulStrikes(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousSuccessfulStrikes(string thisFighterId)
+        //{
+        //    int ret = 0;
 
-                if (combatRound.Result != null)
-                {
-                    if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.REST &&
-                        combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action != CombatEnums.SWING
-                    )
-                    {
-                        ret++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
+        //    string opponentFighterId = otherFighterId(thisFighterId);
 
-            return ret;
-        }
+        //    if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 
-        /// <summary>
-        /// Gives the sequence count for how many times This Fighter has successfully Blocked
-        /// against Opponent Fighter (blocking a heal does not count)
-        /// </summary>
-        /// <param name="thisFighterId"></param>
-        /// <param name="opponentFighterId"></param>
-        /// <returns></returns>
-        //protected int numberPreviousSuccessfulBlocks(string thisFighterId, string opponentFighterId)
-        protected int numberPreviousSuccessfulBlocks(string thisFighterId)
-        {
-            int ret = 0;
-            string opponentFighterId = otherFighterId(thisFighterId);
+        //    for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
+        //    {
+        //        CombatRound combatRound = _combatSession.CombatRounds[i];
 
-            if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
+        //        if (combatRound.Result != null)
+        //        {
+        //            if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.SWING &&
+        //                combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action == CombatEnums.REST
+        //            )
+        //            {
+        //                ret++;
+        //            }
+        //            else
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
 
+        //    return ret;
+        //}
 
-            for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
-            {
-                CombatRound combatRound = _combatSession.CombatRounds[i];
+        ///// <summary>
+        ///// Gives the sequence count for how many times This Fighter has successfully healed
+        ///// </summary>
+        ///// <param name="thisFighterId"></param>
+        ///// <param name="opponentFighterId"></param>
+        ///// <returns></returns>
+        ////protected int numberPreviousSuccessfulHeals(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousSuccessfulHeals(string thisFighterId)
+        //{
+        //    int ret = 0;
 
-                if (combatRound.Result != null)
-                {
-                    if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.BLOCK &&
-                        combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action == CombatEnums.SWING
-                    )
-                    {
-                        ret++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
+        //    string opponentFighterId = otherFighterId(thisFighterId);
 
-            return ret;
-        }
-
-        /// <summary>
-        /// Gives the sequence count for how many times This Fighter has successfully Blocked
-        /// against Opponent Fighter (blocking a heal does not count)
-        /// </summary>
-        /// <param name="thisFighterId"></param>
-        /// <param name="opponentFighterId"></param>
-        /// <returns></returns>
-        //protected int numberPreviousFalseBlocks(string thisFighterId, string opponentFighterId)
-        protected int numberPreviousFalseBlocks(string thisFighterId)
-        {
-            int ret = 0;
-            string opponentFighterId = otherFighterId(thisFighterId);
-
-            if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
+        //    if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 
 
-            for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
-            {
-                CombatRound combatRound = _combatSession.CombatRounds[i];
+        //    for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
+        //    {
+        //        CombatRound combatRound = _combatSession.CombatRounds[i];
 
-                if (combatRound.Result != null)
-                {
-                    if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.BLOCK &&
-                        combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action != CombatEnums.SWING
-                    )
-                    {
-                        ret++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
+        //        if (combatRound.Result != null)
+        //        {
+        //            if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.REST &&
+        //                combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action != CombatEnums.SWING
+        //            )
+        //            {
+        //                ret++;
+        //            }
+        //            else
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
 
-            return ret;
-        }
+        //    return ret;
+        //}
+
+        ///// <summary>
+        ///// Gives the sequence count for how many times This Fighter has successfully Blocked
+        ///// against Opponent Fighter (blocking a heal does not count)
+        ///// </summary>
+        ///// <param name="thisFighterId"></param>
+        ///// <param name="opponentFighterId"></param>
+        ///// <returns></returns>
+        ////protected int numberPreviousSuccessfulBlocks(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousSuccessfulBlocks(string thisFighterId)
+        //{
+        //    int ret = 0;
+        //    string opponentFighterId = otherFighterId(thisFighterId);
+
+        //    if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
+
+
+        //    for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
+        //    {
+        //        CombatRound combatRound = _combatSession.CombatRounds[i];
+
+        //        if (combatRound.Result != null)
+        //        {
+        //            if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.BLOCK &&
+        //                combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action == CombatEnums.SWING
+        //            )
+        //            {
+        //                ret++;
+        //            }
+        //            else
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
+
+        //    return ret;
+        //}
+
+        ///// <summary>
+        ///// Gives the sequence count for how many times This Fighter has successfully Blocked
+        ///// against Opponent Fighter (blocking a heal does not count)
+        ///// </summary>
+        ///// <param name="thisFighterId"></param>
+        ///// <param name="opponentFighterId"></param>
+        ///// <returns></returns>
+        ////protected int numberPreviousFalseBlocks(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousFalseBlocks(string thisFighterId)
+        //{
+        //    int ret = 0;
+        //    string opponentFighterId = otherFighterId(thisFighterId);
+
+        //    if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
+
+
+        //    for (int i = _combatSession.CombatRounds.Count - 1; i > -1; i--)
+        //    {
+        //        CombatRound combatRound = _combatSession.CombatRounds[i];
+
+        //        if (combatRound.Result != null)
+        //        {
+        //            if (combatRound.Moves.Where(x => x.FighterId == thisFighterId).FirstOrDefault().Action == CombatEnums.BLOCK &&
+        //                combatRound.Moves.Where(x => x.FighterId == opponentFighterId).FirstOrDefault().Action != CombatEnums.SWING
+        //            )
+        //            {
+        //                ret++;
+        //            }
+        //            else
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
+
+        //    return ret;
+        //}
+
+
 
     }
 }
