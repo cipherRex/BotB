@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using BotB.Shared.CombatManagement.CombatHistoryResolvers;
 
 namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 {
     public interface ICombatInstanceResolver
     {
-        CombatResult Resolve(CombatMove OpponentMove);
+        CombatResult Resolve(CombatMove OpponentMove, ICombatHistoryResolver CombatHistoryResolver);
     }
 
     public abstract class CombatInstanceResolverBase: ICombatInstanceResolver
@@ -19,8 +20,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             _combatSession = Session;
         }
 
+        protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId, ICombatHistoryResolver CombatHistoryResolver);
+        protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
+
+
         //public virtual CombatResult Resolve(CombatMove OpponentMove)
-        public CombatResult Resolve(CombatMove OpponentMove)
+        public CombatResult Resolve(CombatMove OpponentMove, ICombatHistoryResolver CombatHistoryResolver)
         {
 
             int MAXIMUM_HEALTH = 15;
@@ -30,7 +35,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string thisFighterId = CombatHelpers.otherFighterId(opponentFighterId, _combatSession);
             
 
-            CombatResult combatResult = resolve(thisFighterId, opponentFighterId);
+            CombatResult combatResult = resolve(thisFighterId, opponentFighterId, CombatHistoryResolver);
 
 
             if (combatResult.HPAdjustment.ContainsKey(thisFighterId))
@@ -87,7 +92,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         //            .FirstOrDefault().FighterId;
         //}
 
-        protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
 
         /// <summary>
         /// Return the Hit Point total for fighter by calculating damage history

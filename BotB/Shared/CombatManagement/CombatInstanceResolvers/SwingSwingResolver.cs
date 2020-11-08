@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BotB.Shared.CombatManagement.CombatHistoryResolvers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,6 +46,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.Comments = string.Format("Both knights swing. {0} counterparries and {1} takes damage.", thisFighterId, randomLoserFighterId) ;
 
             return combatResult;
+        }
+
+        protected override CombatResult resolve(string ThisFighterId, string OpponentFighterId, ICombatHistoryResolver CombatHistoryResolver)
+        {
+            throw new NotImplementedException();
         }
     }
 }
