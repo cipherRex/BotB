@@ -6,8 +6,10 @@
 
   <ItemGroup>
     <Compile Remove="CombatManagement\CombatInstanceResolvers\BlockInstanceResolver.cs" />
+    <Compile Remove="CombatManagement\CombatInstanceResolvers\ICombatInstanceResolver.cs" />
     <Compile Remove="CombatManagement\CombatInstanceResolvers\SwingInstanceResolver.cs" />
     <Compile Remove="CombatManagement\CombatResolver.cs" />
+    <Compile Remove="CombatManagement\ResolverBase.cs" />
   </ItemGroup>
 
 </Project>

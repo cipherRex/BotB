@@ -5,6 +5,11 @@ using System.Linq;
 
 namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 {
+    public interface ICombatInstanceResolver
+    {
+        CombatResult Resolve(CombatMove OpponentMove);
+    }
+
     public abstract class CombatInstanceResolverBase: ICombatInstanceResolver
     {
         protected CombatSession _combatSession;
@@ -21,7 +26,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             int MAXIMUM_HEALTH = 15;
 
             string opponentFighterId = OpponentMove.FighterId;
-            string thisFighterId = otherFighterId(opponentFighterId);
+            //string thisFighterId = otherFighterId(opponentFighterId);
+            string thisFighterId = CombatHelpers.otherFighterId(opponentFighterId, _combatSession);
+            
 
             CombatResult combatResult = resolve(thisFighterId, opponentFighterId);
 
@@ -62,12 +69,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// </summary>
         /// <param name="thisFighterId"></param>
         /// <returns></returns>
-        private string otherFighterId(string thisFighterId)
-        { 
-            return _combatSession.CombatRounds[0].Moves
-                    .Where(x => x.FighterId != thisFighterId)
-                    .FirstOrDefault().FighterId;
-        }
+        //private string otherFighterId(string thisFighterId)
+        //{ 
+        //    return _combatSession.CombatRounds[0].Moves
+        //            .Where(x => x.FighterId != thisFighterId)
+        //            .FirstOrDefault().FighterId;
+        //}
 
         protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
 

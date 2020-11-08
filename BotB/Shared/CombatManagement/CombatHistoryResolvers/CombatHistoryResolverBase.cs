@@ -26,7 +26,8 @@ namespace BotB.Shared.CombatManagement.CombatHistoryResolvers
 
             int ret = 0;
 
-            string opponentFighterId = otherFighterId(ThisFighterId);
+            //string opponentFighterId = otherFighterId(ThisFighterId);
+            string opponentFighterId = CombatHelpers.otherFighterId(ThisFighterId, _combatSession);
 
             if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 
@@ -58,11 +59,11 @@ namespace BotB.Shared.CombatManagement.CombatHistoryResolvers
             return ret;
         }
 
-        private string otherFighterId(string thisFighterId)
-        {
-            return _combatSession.CombatRounds[0].Moves
-                    .Where(x => x.FighterId != thisFighterId)
-                    .FirstOrDefault().FighterId;
-        }
+        //private string otherFighterId(string thisFighterId)
+        //{
+        //    return _combatSession.CombatRounds[0].Moves
+        //            .Where(x => x.FighterId != thisFighterId)
+        //            .FirstOrDefault().FighterId;
+        //}
     }
 }
