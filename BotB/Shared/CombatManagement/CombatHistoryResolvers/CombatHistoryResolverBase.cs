@@ -14,7 +14,7 @@ namespace BotB.Shared.CombatManagement.CombatHistoryResolvers
     {
         protected CombatSession _combatSession;
 
-        protected abstract bool truthCondition(CombatEnums thisPlayerAction, CombatEnums opponentPlayerAction);
+        protected abstract bool truthCondition(CombatActions thisPlayerAction, CombatActions opponentPlayerAction);
 
         public CombatHistoryResolverBase(CombatSession Session)
         {

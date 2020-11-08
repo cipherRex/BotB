@@ -14,13 +14,13 @@ namespace BotB.Shared.CombatManagement
         public string Comments { get; set; }
         public List<string> ShieldTaunt { get; set; }
         public List<string> ShieldRecoil { get; set; }
-        public List<KeyValuePair<string, CombatEnums>> MoveRestrictions { get; set; }
+        public List<KeyValuePair<string, CombatActions>> MoveRestrictions { get; set; }
 
         public CombatResult()
         {
             ShieldTaunt = new List<string>();
             ShieldRecoil = new List<string>();
-            MoveRestrictions = new List<KeyValuePair<string, CombatEnums>>();
+            MoveRestrictions = new List<KeyValuePair<string, CombatActions>>();
         }
     }
 

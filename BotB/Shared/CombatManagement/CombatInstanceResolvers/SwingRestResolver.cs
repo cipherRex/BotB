@@ -38,8 +38,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //if no previous hits then MINOR damage animations
             if (previousSuccessfulStrikes == 0)
             {
-                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_KICK;
-                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_GROINED;
+                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_KICK;
+                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_GROINED;
 
                 combatResult.Comments = string.Format("{0} takes damage.", opponentFighterId);
 
@@ -47,8 +47,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //if there are previous consecutive hits, them MAJOR damage animations
             else
             {
-                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_CLEAVE;
-                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_CLEAVED;
+                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_CLEAVE;
+                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_CLEAVED;
 
                 combatResult.Comments = string.Format("{0} takes lots of damage.", opponentFighterId);
 

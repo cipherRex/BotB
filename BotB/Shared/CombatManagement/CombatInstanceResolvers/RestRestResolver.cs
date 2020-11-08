@@ -41,8 +41,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //int totalOpponentHealPoints = numberPreviousSuccessfulHeals(opponentFighterId);
             int totalOpponentHealPoints = successfulHealHistoryResolver.Resolve(opponentFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_HEAL;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_HEAL;
+            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_HEAL;
+            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;
 
             combatResult.HPAdjustment[thisFighterId] = totalThisHealPoints;
             combatResult.HPAdjustment[opponentFighterId] = 1 + totalOpponentHealPoints;

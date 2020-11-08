@@ -33,8 +33,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string randomLoserFighterId = randomBool ? opponentFighterId : thisFighterId;
 
             //winner counterparries (ie, wins)
-            combatResult.CombatAnimationInstructions[randomWinnerFighterId].AnimCommand = AnimationCommand.AC_COUNTERPARRY;
-            combatResult.CombatAnimationInstructions[randomLoserFighterId].AnimCommand = AnimationCommand.AC_PARRY;
+            combatResult.CombatAnimationInstructions[randomWinnerFighterId].AnimCommand = AnimationCommands.AC_COUNTERPARRY;
+            combatResult.CombatAnimationInstructions[randomLoserFighterId].AnimCommand = AnimationCommands.AC_PARRY;
 
             //loser loses a point
             combatResult.HPAdjustment[randomLoserFighterId] = -1;

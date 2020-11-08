@@ -9,9 +9,9 @@ namespace BotB.Shared.CombatManagement.CombatHistoryResolvers
         public FalseBlockHistoryResolver(CombatSession Session) : base(Session)
         { }
 
-        protected override bool truthCondition(CombatEnums thisPlayerAction, CombatEnums opponentPlayerAction)
+        protected override bool truthCondition(CombatActions thisPlayerAction, CombatActions opponentPlayerAction)
         {
-            return thisPlayerAction == CombatEnums.BLOCK && opponentPlayerAction != CombatEnums.SWING;
+            return thisPlayerAction == CombatActions.BLOCK && opponentPlayerAction != CombatActions.SWING;
         }
     }
 }

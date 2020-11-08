@@ -37,8 +37,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
             int numberPreviousTimesBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_SWING;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
+            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_SWING;
+            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
 
             //add flag to signal recoil animation
             combatResult.ShieldRecoil.Add(opponentFighterId);
@@ -50,9 +50,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             {
                 combatResult.ShieldTaunt.Add(opponentFighterId);
                 //This Player cant swing next turn
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(thisFighterId, CombatEnums.SWING));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.SWING));
                 //So opponent cant block
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.BLOCK));
 
                 comments = comments + string.Format(" {0} cannot swing next turn, so {1} cannot use shield", thisFighterId, opponentFighterId);
             }

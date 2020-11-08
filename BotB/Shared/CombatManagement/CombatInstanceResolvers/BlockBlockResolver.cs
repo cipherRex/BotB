@@ -39,17 +39,17 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             int numTimesThisFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(opponentFighterId);
             int numTimesOpponentFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
+            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
 
             if (numTimesThisFighterHasBeenBlocked > 1)
             {
                 comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", opponentFighterId);
                 combatResult.ShieldTaunt.Add(opponentFighterId);
                 //This Fighter cant block next turn
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(thisFighterId, CombatEnums.BLOCK));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
                 //So Opponent Fighter cant block either
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.BLOCK));
             }
 
             if (numTimesOpponentFighterHasBeenBlocked > 1)
@@ -57,9 +57,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", thisFighterId);
                 combatResult.ShieldTaunt.Add(thisFighterId);
                 //Opponent Fighter cant block next turn
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(opponentFighterId, CombatEnums.BLOCK));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.BLOCK));
                 //So This Fighter cant block either
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>(thisFighterId, CombatEnums.BLOCK));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
             }
 
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);

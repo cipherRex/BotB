@@ -1,15 +1,23 @@
 ﻿
 namespace BotB.Shared.CombatManagement
 {
-    public enum CombatEnums
+    //public enum CombatEnums
+    //{
+    //    UNASSIGNED = 0,
+    //    SWING = 1,
+    //    BLOCK = 2,
+    //    REST = 3
+    //}
+
+    public enum CombatActions
     {
-        UNASSIGNED = 0,
+//        UNASSIGNED = 0,
         SWING = 1,
         BLOCK = 2,
         REST = 3
     }
 
-    public enum AnimationCommand
+    public enum AnimationCommands
     {
         AC_SWING = 0,
         AC_PARRY = 1,
@@ -26,7 +34,7 @@ namespace BotB.Shared.CombatManagement
         AC_RUN = 12
     }
 
-    public enum CombatVictoryCondition
+    public enum CombatVictoryConditions
     {
         VICTORY_KILL = 0,
         VICTORY_RUNAWAY = 1

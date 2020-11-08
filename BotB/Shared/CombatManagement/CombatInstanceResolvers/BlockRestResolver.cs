@@ -39,7 +39,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             int previousFalseBlocks = falseBlockHistoryResolver.Resolve(thisFighterId);
             if (previousFalseBlocks > 0) 
             {
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>( thisFighterId, CombatEnums.BLOCK));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>( thisFighterId, CombatActions.BLOCK));
                 comments = string.Format("{0} false blocks and cannot block next turn", thisFighterId);
             }
 
@@ -48,8 +48,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //int previousHeals = numberPreviousSuccessfulHeals(opponentFighterId);
             int previousHeals = falseBlockHistoryResolver.Resolve(opponentFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_HEAL;
+            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;
 
             //damage is base 2 plus previous consecutive hits
             int totalHealing = 1 + previousHeals;

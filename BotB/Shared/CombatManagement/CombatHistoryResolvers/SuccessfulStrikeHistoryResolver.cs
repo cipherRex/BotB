@@ -9,9 +9,9 @@ namespace BotB.Shared.CombatManagement.CombatHistoryResolvers
         public SuccessfulStrikeHistoryResolver(CombatSession Session) : base(Session) 
         { }
 
-        protected override bool truthCondition(CombatEnums thisPlayerAction, CombatEnums opponentPlayerAction)
+        protected override bool truthCondition(CombatActions thisPlayerAction, CombatActions opponentPlayerAction)
         {
-            return thisPlayerAction == CombatEnums.SWING && opponentPlayerAction == CombatEnums.REST;
+            return thisPlayerAction == CombatActions.SWING && opponentPlayerAction == CombatActions.REST;
         }
     }
 }

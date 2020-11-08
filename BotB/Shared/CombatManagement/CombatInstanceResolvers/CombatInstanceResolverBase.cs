@@ -32,6 +32,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             CombatResult combatResult = resolve(thisFighterId, opponentFighterId);
 
+
             if (combatResult.HPAdjustment.ContainsKey(thisFighterId))
             {
                 combatResult.HPAdjustment[thisFighterId] =
@@ -39,13 +40,23 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                                         combatResult.TotalRunningHPs[thisFighterId],
                                         MAXIMUM_HEALTH);
             }
-
             if (combatResult.HPAdjustment.ContainsKey(opponentFighterId))
             {
                 combatResult.HPAdjustment[opponentFighterId] =
                     trimExecHpAdjustment(combatResult.HPAdjustment[opponentFighterId],
                                         combatResult.TotalRunningHPs[opponentFighterId],
                                         MAXIMUM_HEALTH);
+            }
+
+
+            if (combatResult.TotalRunningHPs[thisFighterId] < 1) 
+            {
+                combatResult.Victory = new CombatVictory(opponentFighterId, CombatVictoryConditions.VICTORY_KILL);
+                
+            }
+            if (combatResult.TotalRunningHPs[opponentFighterId] < 1)
+            {
+                combatResult.Victory = new CombatVictory(thisFighterId, CombatVictoryConditions.VICTORY_KILL);
             }
 
             return combatResult;
