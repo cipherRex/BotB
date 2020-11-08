@@ -29,7 +29,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             CombatResult combatResult = new CombatResult();
 
             //get count of how may times Opponent Fighter has previously been hit (consecutively)
-            int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
+            //int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
+            int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId);
 
             //if no previous hits then MINOR damage animations
             if (previousSuccessfulStrikes == 0)

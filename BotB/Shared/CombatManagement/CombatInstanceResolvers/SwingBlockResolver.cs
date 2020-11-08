@@ -30,7 +30,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string comments = "";
 
             //get count of how may times Opponent Fighter has previously been blocked (consecutively)
-            int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
+            //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
+            int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
 
             combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_SWING;
             combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_BLOCK;

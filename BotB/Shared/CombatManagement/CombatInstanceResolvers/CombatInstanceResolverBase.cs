@@ -18,12 +18,23 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         {
 
             string opponentFighterId = OpponentMove.FighterId;
-            string thisFighterId = _combatSession.CombatRounds[0].Moves
-                                    .Where(x => x.FighterId != opponentFighterId)
-                                    .FirstOrDefault().FighterId;
+            string thisFighterId = otherFighterId(opponentFighterId);
 
             return resolve(thisFighterId, opponentFighterId);
 
+        }
+
+        /// <summary>
+        /// Pass in a figher id and this cans the session to find the other
+        /// fighter's id
+        /// </summary>
+        /// <param name="thisFighterId"></param>
+        /// <returns></returns>
+        private string otherFighterId(string thisFighterId)
+        { 
+            return _combatSession.CombatRounds[0].Moves
+                    .Where(x => x.FighterId != thisFighterId)
+                    .FirstOrDefault().FighterId;
         }
 
         protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
@@ -53,9 +64,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected int numberPreviousSuccessfulStrikes(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousSuccessfulStrikes(string thisFighterId, string opponentFighterId)
+        protected int numberPreviousSuccessfulStrikes(string thisFighterId)
         {
             int ret = 0;
+
+            string opponentFighterId = otherFighterId(thisFighterId);
 
             if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 
@@ -88,9 +102,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected int numberPreviousSuccessfulHeals(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousSuccessfulHeals(string thisFighterId, string opponentFighterId)
+        protected int numberPreviousSuccessfulHeals(string thisFighterId)
         {
             int ret = 0;
+
+            string opponentFighterId = otherFighterId(thisFighterId);
 
             if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 
@@ -124,9 +141,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected int numberPreviousSuccessfulBlocks(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousSuccessfulBlocks(string thisFighterId, string opponentFighterId)
+        protected int numberPreviousSuccessfulBlocks(string thisFighterId)
         {
             int ret = 0;
+            string opponentFighterId = otherFighterId(thisFighterId);
 
             if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 
@@ -160,9 +179,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected int numberPreviousFalseBlocks(string thisFighterId, string opponentFighterId)
+        //protected int numberPreviousFalseBlocks(string thisFighterId, string opponentFighterId)
+        protected int numberPreviousFalseBlocks(string thisFighterId)
         {
             int ret = 0;
+            string opponentFighterId = otherFighterId(thisFighterId);
 
             if (_combatSession.CombatRounds.Where(x => x.Result != null).Count() == 0) { return 0; }
 

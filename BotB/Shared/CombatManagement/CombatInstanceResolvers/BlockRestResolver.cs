@@ -31,7 +31,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string comments = "Player heals.";
 
             //get count of how may times This Fighter has been previously false blocked
-            int previousFalseBlocks = numberPreviousFalseBlocks(thisFighterId, opponentFighterId);
+            //int previousFalseBlocks = numberPreviousFalseBlocks(thisFighterId, opponentFighterId);
+            int previousFalseBlocks = numberPreviousFalseBlocks(thisFighterId);
             if (previousFalseBlocks > 0) 
             {
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatEnums>( thisFighterId, CombatEnums.BLOCK));
@@ -39,7 +40,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             }
 
             //get count of how may times Opponent Fighter has previously healed
-            int previousHeals = numberPreviousSuccessfulHeals(opponentFighterId, thisFighterId);
+            //int previousHeals = numberPreviousSuccessfulHeals(opponentFighterId, thisFighterId);
+            int previousHeals = numberPreviousSuccessfulHeals(opponentFighterId);
 
             combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
             combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_HEAL;

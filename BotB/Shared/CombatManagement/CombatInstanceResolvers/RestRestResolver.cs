@@ -29,10 +29,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             CombatResult combatResult = new CombatResult();
 
             //get count of how may times This Fighter has been successfully healed consecutively
-            int totalThisHealPoints = 1 + numberPreviousSuccessfulHeals(thisFighterId, opponentFighterId);
+            //int totalThisHealPoints = 1 + numberPreviousSuccessfulHeals(thisFighterId, opponentFighterId);
+            int totalThisHealPoints = 1 + numberPreviousSuccessfulHeals(thisFighterId);
 
             //get count of how may times Opponent Fighter has been successfully healed consecutively
-            int totalOpponentHealPoints = numberPreviousSuccessfulHeals(opponentFighterId, thisFighterId);
+            //int totalOpponentHealPoints = numberPreviousSuccessfulHeals(opponentFighterId, thisFighterId);
+            int totalOpponentHealPoints = numberPreviousSuccessfulHeals(opponentFighterId);
 
             combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_HEAL;
             combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_HEAL;

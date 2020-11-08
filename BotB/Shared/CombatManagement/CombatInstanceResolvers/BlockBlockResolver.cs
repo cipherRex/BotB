@@ -29,8 +29,10 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             CombatResult combatResult = new CombatResult();
             string comments = "Both knights block.";
 
-            int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId, thisFighterId);
-            int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
+            //int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId, thisFighterId);
+            //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
+            int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId);
+            int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
 
             combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
             combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommand.AC_BLOCK;
