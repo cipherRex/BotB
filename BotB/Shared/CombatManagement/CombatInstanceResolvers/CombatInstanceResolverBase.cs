@@ -14,7 +14,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             _combatSession = Session;
         }
 
-        public virtual CombatResult Resolve(CombatMove OpponentMove) 
+        //public virtual CombatResult Resolve(CombatMove OpponentMove)
+        public CombatResult Resolve(CombatMove OpponentMove)
         {
 
             int MAXIMUM_HEALTH = 15;

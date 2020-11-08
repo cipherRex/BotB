@@ -12,10 +12,10 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         public RestRestResolver(CombatSession Session) : base(Session)
         { }
 
-        public override CombatResult Resolve(CombatMove OpponentMove)
-        {
-            return base.Resolve(OpponentMove);
-        }
+        //public override CombatResult Resolve(CombatMove OpponentMove)
+        //{
+        //    return base.Resolve(OpponentMove);
+        //}
 
         /// <summary>
         /// This Fighter RESTS, Opponent Fighter RESTS
