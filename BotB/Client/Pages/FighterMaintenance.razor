@@ -1,0 +1,153 @@
+﻿
+@page "/fighterMaint"
+@using BotB.Shared
+@inject IHttpClientFactory HttpClientFactory
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+
+
+<h3>FighterMaintenance</h3>
+
+<div>
+    <div>
+        <EditForm Model="@_newFighter" OnValidSubmit="@HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <CustomInputText @bind-Value=_newFighter.Name></CustomInputText>
+
+            <div style="width: 330px" class="inner-div">
+                <select id="pictureSelect" />
+            </div>
+
+            <button type="submit" disabled=@InvalidForm>Submit</button>
+        </EditForm>
+
+
+    </div>
+
+</div>
+
+<div>
+    <ul>
+        @foreach (var fighter in _playerFighters)
+        {
+            <li>
+                @fighter.Name
+                <img src="/images/@fighter.Picture" style="height:70px;" />
+            </li>
+        }
+
+    </ul>
+</div>
+
+<div>
+    @_balance
+</div>
+
+@code {
+
+
+    private List<Fighter> _playerFighters = new List<Fighter>();
+
+    private int _balance = 0;
+
+    private Fighter _newFighter = new Fighter();
+
+    public bool InsufficientBalance
+    {
+        get
+        {
+            return _balance < 40;
+
+        }
+    }
+
+    public bool InvalidForm
+    {
+        get
+        {
+            return InsufficientBalance ||
+                _newFighter.Name.Trim() == string.Empty;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            getPlayerBalance();
+            fillFightersList();
+
+            await JSRuntime.InvokeVoidAsync("botBFunctions.initializeFighterPicturesDropDown", "");
+
+
+
+
+            StateHasChanged();
+
+        }
+
+    }
+
+
+
+    public async Task<string> GetPictureFilenameFromDOM()
+    {
+        var selectedPictureFilename = await JSRuntime.InvokeAsync<string>(
+        "botBFunctions.getSelectedPictureFilename");
+
+        return selectedPictureFilename;
+        //_currentlySelectedFighterId = currentlySelectedFighterId;
+    }
+
+    private async void fillFightersList()
+    {
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+
+        //_playerFighters = await http.GetFromJsonAsync<Fighter[]>("FighterMaintenance/PlayerFighters");
+        _playerFighters = await http.GetFromJsonAsync<List<Fighter>>("FighterMaintenance/PlayerFighters");
+
+        StateHasChanged();
+    }
+
+
+    private async void getPlayerBalance()
+    {
+        //_balance = 150;
+        //return;
+
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+        _balance = await http.GetFromJsonAsync<int>("FighterMaintenance/GetPlayerBalance");
+        //_balance = balance;
+        StateHasChanged();
+    }
+
+    //public void addFighter()
+    //{
+
+    //    //var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+    //    //await http.PostAsync(;
+
+    //    StateHasChanged();
+    //}
+
+
+    private async void HandleValidSubmit()
+    {
+
+        string fileName = await GetPictureFilenameFromDOM();
+
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+
+        _newFighter.Picture = fileName;
+
+        var response = await http.PostAsJsonAsync("FighterMaintenance/NewFighter", System.Text.Json.JsonSerializer.Serialize(_newFighter));
+
+        getPlayerBalance();
+        fillFightersList();
+        _newFighter = new Fighter();
+
+    }
+
+}
