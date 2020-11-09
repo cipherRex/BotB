@@ -48,9 +48,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             return combatResult;
         }
 
-        protected override CombatResult resolve(string ThisFighterId, string OpponentFighterId, ICombatHistoryResolver CombatHistoryResolver)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

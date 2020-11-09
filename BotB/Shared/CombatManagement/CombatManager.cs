@@ -33,9 +33,9 @@ namespace BotB.Shared.CombatManagement
             //return null;
         }
 
-        public CombatSession CreateCombatSession(string fighter1Id, string fighter2Id )
+        public CombatSession CreateCombatSession(Fighter Fighte1, Fighter Fighter2)
         {
-            CombatSession combatSession = new CombatSession(fighter1Id, fighter2Id);
+            CombatSession combatSession = new CombatSession(Fighte1, Fighter2);
             CombatSessions.Add(combatSession);
             return combatSession;
         }

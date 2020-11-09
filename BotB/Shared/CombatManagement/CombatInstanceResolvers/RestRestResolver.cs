@@ -25,11 +25,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId, ICombatHistoryResolver successfulHealHistoryResolver)
+        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
 
-            //ICombatHistoryResolver successfulHealHistoryResolver = new SuccessfulHealHistoryResolver(_combatSession);
+            ICombatHistoryResolver successfulHealHistoryResolver = new SuccessfulHealHistoryResolver(_combatSession);
 
             //get count of how may times This Fighter has been successfully healed consecutively
             //int totalThisHealPoints = 1 + numberPreviousSuccessfulHeals(thisFighterId, opponentFighterId);
@@ -55,9 +55,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             return combatResult;
         }
 
-        protected override CombatResult resolve(string ThisFighterId, string OpponentFighterId)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

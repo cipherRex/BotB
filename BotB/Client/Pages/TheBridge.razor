@@ -100,7 +100,7 @@
         </div>
 
         <div>
-            <button onclick="javascript: intoTheArenaFunctions.fooFunc();">Click me</button>
+            <button onclick="javascript: botBFunctions.fooFunc();">Click me</button>
         </div>
 
 
@@ -119,14 +119,14 @@
     public string Info { get; set; }
 
     private string _role = "";
-    private string _sessionId = "";
+    //private string _sessionId = "";
     private string _fighterId = "";
     private string _playerId = "";
 
     private CombatActions _action = CombatActions.UNASSIGNED;
 
-    private static Action action;
-    private static Action coundownCompleteAction;
+    private static Action onAnimationIdleAction;
+    private static Action onCoundownCompleteAction;
 
     ChatClient _chatClient = null;
 
@@ -139,15 +139,13 @@
     [JSInvokable]
     public static void OnAnimationIdle()
     {
-        action.Invoke();
-
+        onAnimationIdleAction.Invoke();
     }
 
     [JSInvokable]
     public static void onCountdownComplete()
     {
-        coundownCompleteAction.Invoke();
-
+        onCoundownCompleteAction.Invoke();
     }
 
 
@@ -176,12 +174,15 @@
         submitMove();
     }
 
-    private void UpdateMessage()
+    private void sendAnimationIdleMessage()
     {
-        Tuple<string, string> fighterIdAndSessionId = new Tuple<string, string>(_fighterId, _sessionId);
-        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
-        var response = http.PostAsJsonAsync("Combat/AnimationIdled", JsonSerializer.Serialize<Tuple<string, string>>(fighterIdAndSessionId));
+        //Tuple<string, string> fighterIdAndSessionId = new Tuple<string, string>(_fighterId, _sessionId);
+        //var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+        //var response = http.PostAsJsonAsync("Combat/AnimationIdled", JsonSerializer.Serialize<Tuple<string, string>>(fighterIdAndSessionId));
 
+        //Tuple<string, string> fighterIdAndSessionId = new Tuple<string, string>(_fighterId);
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+        var response = http.PostAsJsonAsync("Combat/AnimationIdled", _fighterId);
 
     }
 
@@ -196,9 +197,8 @@
 
     protected override void OnInitialized()
     {
-        action = UpdateMessage;
-
-        coundownCompleteAction = CoundownComplete;
+        onAnimationIdleAction = sendAnimationIdleMessage;
+        onCoundownCompleteAction = CoundownComplete;
     }
 
     protected override async Task OnInitializedAsync()
@@ -210,7 +210,7 @@
 
         dynamic dynamicInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(this.Info);
         _role = dynamicInfo.Role;
-        _sessionId = dynamicInfo.SessionId;
+        //_sessionId = dynamicInfo.SessionId;
         _fighterId = dynamicInfo.FighterId;
         _playerId = dynamicInfo.PlayerId;
 
@@ -294,9 +294,80 @@
     void OnCombatRoundResult(object sender, CombatRoundResultEventArgs e)
     {
 
-        string fo0 = "";
+        combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
 
-        //combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
+        string otherFighterId = combatResult.CombatAnimationInstructions.
+                                                        Where(x => x.Key != _fighterId).FirstOrDefault().
+                                                        Value.FighterID;
+
+        AnimationCommands thisKnightAnimationCommand = combatResult.CombatAnimationInstructions[_fighterId].AnimCommand;
+        AnimationCommands otherKnightAnimationCommand = combatResult.CombatAnimationInstructions[otherFighterId].AnimCommand;
+
+        int thisKnightHpAdj = combatResult.HPAdjustments.ContainsKey(_playerId) ? combatResult.HPAdjustments[_playerId] : 0;
+        int otherKnightHpAdj = combatResult.HPAdjustments.ContainsKey(_playerId) ? combatResult.HPAdjustments[otherFighterId] : 0;
+
+        if (thisKnightAnimationCommand != AnimationCommands.AC_BLOCK)
+        {
+            string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)thisKnightAnimationCommand];
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
+        }
+        else
+        {
+            string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)thisKnightAnimationCommand];
+
+            string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
+
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
+        }
+
+        if (otherKnightAnimationCommand != AnimationCommands.AC_BLOCK)
+        {
+            string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)otherKnightAnimationCommand];
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
+        }
+        else
+        {
+            string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)otherKnightAnimationCommand];
+
+            string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
+
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
+        }
+
+        if (thisKnightHpAdj > 0)
+        {
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteHealEffect", thisKnightHpAdj);
+        }
+        else if (thisKnightHpAdj < 0)
+        {
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteBleedEffect", thisKnightHpAdj);
+        }
+
+        if (otherKnightHpAdj > 0)
+        {
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackHealEffect", otherKnightHpAdj);
+        }
+        else if (otherKnightHpAdj < 0)
+        {
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackBleedEffect", otherKnightHpAdj);
+        }
+
+        if (thisKnightHpAdj != 0)
+        {
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteDmg", thisKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteHPs", combatResult.TotalRunningHPs[_fighterId]);
+        }
+
+        if (otherKnightHpAdj != 0)
+        {
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackDmg", otherKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackHPs", combatResult.TotalRunningHPs[otherFighterId]);
+        }
+
+        JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setSystemMsg", combatResult.Comments);
+
+
+
 
         //if (combatResult.WhiteAnimationId != AnimationCommand.AC_BLOCK)
         //{
@@ -395,15 +466,20 @@
 
         string foo = "";
 
-        //JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
+        JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
 
-        //_actionsClass = "disabledDiv";
-        //StateHasChanged();
+        _actionsClass = "disabledDiv";
+        StateHasChanged();
 
         //CombatMove combatMove = new CombatMove() { SessionId = _sessionId, FighterId = _fighterId, PlayerId = _playerId, Action = _action };
+        CombatMove combatMove = new CombatMove();
 
-        //var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
-        //var response = await http.PostAsJsonAsync("Combat/CombatMove", combatMove);
+        combatMove.Action = _action;
+        combatMove.FighterId = _fighterId;
+
+
+        var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+        var response = await http.PostAsJsonAsync("Combat/CombatMove", combatMove);
     }
 
     private Dictionary<int, string> javascriptHookFunctionNames()

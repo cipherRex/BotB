@@ -26,13 +26,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
         protected override CombatResult resolve(string thisFighterId, 
-                                                string opponentFighterId, 
-                                                ICombatHistoryResolver successfulBlockHistoryResolver)
+                                                string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
             string comments = "Both knights block.";
 
-            //ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
+            ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
 
             //int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId, thisFighterId);
             //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
@@ -72,9 +71,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             return combatResult;
         }
 
-        protected override CombatResult resolve(string ThisFighterId, string OpponentFighterId)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

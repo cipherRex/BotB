@@ -8,7 +8,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 {
     public interface ICombatInstanceResolver
     {
-        CombatResult Resolve(CombatMove OpponentMove, ICombatHistoryResolver CombatHistoryResolver);
+        CombatResult Resolve(CombatMove OpponentMove);
     }
 
     public abstract class CombatInstanceResolverBase: ICombatInstanceResolver
@@ -20,12 +20,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             _combatSession = Session;
         }
 
-        protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId, ICombatHistoryResolver CombatHistoryResolver);
         protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
 
 
         //public virtual CombatResult Resolve(CombatMove OpponentMove)
-        public CombatResult Resolve(CombatMove OpponentMove, ICombatHistoryResolver CombatHistoryResolver)
+        public CombatResult Resolve(CombatMove OpponentMove)
         {
 
             int MAXIMUM_HEALTH = 15;
@@ -35,7 +34,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string thisFighterId = CombatHelpers.otherFighterId(opponentFighterId, _combatSession);
             
 
-            CombatResult combatResult = resolve(thisFighterId, opponentFighterId, CombatHistoryResolver);
+            CombatResult combatResult = resolve(thisFighterId, opponentFighterId);
 
 
             if (combatResult.HPAdjustments.ContainsKey(thisFighterId))

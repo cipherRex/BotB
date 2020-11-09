@@ -26,12 +26,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId, ICombatHistoryResolver falseBlockHistoryResolver)
+        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
             string comments = "Player heals.";
 
-            //ICombatHistoryResolver falseBlockHistoryResolver = new FalseBlockHistoryResolver(_combatSession);
+            ICombatHistoryResolver falseBlockHistoryResolver = new FalseBlockHistoryResolver(_combatSession);
 
             //get count of how may times This Fighter has been previously false blocked
             //int previousFalseBlocks = numberPreviousFalseBlocks(thisFighterId, opponentFighterId);
@@ -63,9 +63,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             return combatResult;
         }
 
-        protected override CombatResult resolve(string ThisFighterId, string OpponentFighterId)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

@@ -25,10 +25,10 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId, ICombatHistoryResolver successfulBlockHistoryResolver)
+        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
-            //ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
+            ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
 
             string comments = "";
 
@@ -65,9 +65,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             return combatResult;
         }
 
-        protected override CombatResult resolve(string ThisFighterId, string OpponentFighterId)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

@@ -25,10 +25,10 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId, ICombatHistoryResolver successfulStrikeHistoryResolver)
+        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
             CombatResult combatResult = new CombatResult();
-            //ICombatHistoryResolver successfulStrikeHistoryResolver = new SuccessfulStrikeHistoryResolver(_combatSession);
+            ICombatHistoryResolver successfulStrikeHistoryResolver = new SuccessfulStrikeHistoryResolver(_combatSession);
 
             //get count of how may times Opponent Fighter has previously been hit (consecutively)
             //int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
@@ -65,9 +65,6 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             return combatResult;
         }
 
-        protected override CombatResult resolve(string ThisFighterId, string OpponentFighterId)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

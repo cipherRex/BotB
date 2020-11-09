@@ -137,7 +137,8 @@ namespace BotB.Server.Controllers
 
 
             //string sessionId = _combatManager.AddCombatSession(new CombatSession(myFighter.ownerId, challengedFighter.ownerId));
-            _combatManager.CreateCombatSession(myFighter.id, challengedFighter.id);
+            //_combatManager.CreateCombatSession(myFighter.id, challengedFighter.id);
+            _combatManager.CreateCombatSession(myFighter, challengedFighter);
 
             await _chatHubContext.AcceptChallenge(_userEmail, myFighter.ownerId, challengedFighter.ownerId, myFighter.id, challengedFighter.id);
 

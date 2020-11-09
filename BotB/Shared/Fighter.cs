@@ -26,5 +26,7 @@ namespace BotB.Shared
 
         public string Picture { get; set; }
 
+        public string Color { get; set; }
+
     }
 }
