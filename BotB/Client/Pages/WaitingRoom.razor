@@ -234,7 +234,7 @@
     public async Task GetCurrentFighterIdFromDOM()
     {
         var currentlySelectedFighterId = await JSRuntime.InvokeAsync<string>(
-        "intoTheArenaFunctions.getSelectedFighterId");
+        "botBFunctions.getSelectedFighterId");
         _currentlySelectedFighterId = currentlySelectedFighterId;
     }
 
@@ -242,7 +242,7 @@
     {
         if (firstRender)
         {
-            var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
 
             _playerFighters = await http.GetFromJsonAsync<Fighter[]>("Lobby/PlayerFighters");
 
@@ -262,7 +262,7 @@
             }
 
             //await JSRuntime.InvokeVoidAsync("jsInterop.initializeFightersDropDown", System.Text.Json.JsonSerializer.Serialize(playerFighterList));
-            await JSRuntime.InvokeVoidAsync("intoTheArenaFunctions.initializeFightersDropDown", System.Text.Json.JsonSerializer.Serialize(playerFighterList));
+            await JSRuntime.InvokeVoidAsync("botBFunctions.initializeFightersDropDown", System.Text.Json.JsonSerializer.Serialize(playerFighterList));
 
         }
     }
@@ -273,7 +273,7 @@
         try
         {
 
-            var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
 
             _contestants = await http.GetFromJsonAsync<List<Fighter>>("Lobby/Combatants");
 
@@ -362,7 +362,7 @@
             selectedFighter.ownerId = _chatClientId;
 
 
-            var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
             var response = await http.PostAsJsonAsync("Lobby/EnterLobby", System.Text.Json.JsonSerializer.Serialize(selectedFighter));
 
         }
@@ -384,7 +384,7 @@
             Fighter selectedFighter = _playerFighters.Where(x => x.id == _currentlySelectedFighterId).First();
 
 
-            var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
             var response = await http.PostAsJsonAsync("Lobby/ExitLobby", System.Text.Json.JsonSerializer.Serialize(selectedFighter));
 
         }
@@ -413,7 +413,7 @@
 
             serializedFighter = System.Text.Json.JsonSerializer.Serialize(expandoObject);
 
-            var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
             var response = await http.PostAsJsonAsync("Lobby/Challenge", serializedFighter);
 
             _challengeeIDs.Add(challengedFighter.id);
@@ -444,7 +444,7 @@
 
             serializedFighter = System.Text.Json.JsonSerializer.Serialize(expandoObject);
 
-            var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
             var response = await http.PostAsJsonAsync("Lobby/AcceptChallenge", serializedFighter);
 
             //_challengeeIDs.Add(challengingFighter.id);
