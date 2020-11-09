@@ -6,15 +6,15 @@ namespace BotB.Shared.CombatManagement
 {
     public class CombatRound
     {
-        private List<CombatMove> _moves = null;
+        private List<CombatMove> _moves = new List<CombatMove>();
 
-        public List< CombatMove> Moves { get; }
+        public List< CombatMove> Moves { get { return _moves; } }
         public CombatResult Result { get; set; }
 
 
-        public CombatRound(List<CombatMove> PlayerMoves)
+        public CombatRound(CombatMove PlayerMove)
         {
-            _moves = PlayerMoves;
+            _moves.Add(PlayerMove);
         }
 
 

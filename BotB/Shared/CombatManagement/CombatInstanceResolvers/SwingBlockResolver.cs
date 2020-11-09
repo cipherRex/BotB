@@ -30,15 +30,17 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             CombatResult combatResult = new CombatResult();
             ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
 
-            string comments = "";
+            string comments;
 
             //get count of how may times Opponent Fighter has previously been blocked (consecutively)
             //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
             //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
             int numberPreviousTimesBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_SWING;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_SWING;
+            //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            combatResult.CombatAnimationInstructions.Add(thisFighterId, new CombatAnimationInstruction() {FighterID = thisFighterId , AnimCommand = AnimationCommands.AC_SWING });
+            combatResult.CombatAnimationInstructions.Add(opponentFighterId, new CombatAnimationInstruction() { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_BLOCK });
 
             //add flag to signal recoil animation
             combatResult.ShieldRecoil.Add(opponentFighterId);

@@ -181,6 +181,11 @@
         //var response = http.PostAsJsonAsync("Combat/AnimationIdled", JsonSerializer.Serialize<Tuple<string, string>>(fighterIdAndSessionId));
 
         //Tuple<string, string> fighterIdAndSessionId = new Tuple<string, string>(_fighterId);
+
+
+        _idleMessage = "HELLO";
+        StateHasChanged();
+
         var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
         var response = http.PostAsJsonAsync("Combat/AnimationIdled", _fighterId);
 
@@ -309,7 +314,7 @@
         if (thisKnightAnimationCommand != AnimationCommands.AC_BLOCK)
         {
             string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)thisKnightAnimationCommand];
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
         }
         else
         {
@@ -317,13 +322,13 @@
 
             string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
 
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName, serializedForBlock);
         }
 
         if (otherKnightAnimationCommand != AnimationCommands.AC_BLOCK)
         {
             string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)otherKnightAnimationCommand];
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
         }
         else
         {
@@ -331,40 +336,40 @@
 
             string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
 
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName, serializedForBlock);
         }
 
         if (thisKnightHpAdj > 0)
         {
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteHealEffect", thisKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "whiteHealEffect", thisKnightHpAdj);
         }
         else if (thisKnightHpAdj < 0)
         {
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteBleedEffect", thisKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "whiteBleedEffect", thisKnightHpAdj);
         }
 
         if (otherKnightHpAdj > 0)
         {
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackHealEffect", otherKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "blackHealEffect", otherKnightHpAdj);
         }
         else if (otherKnightHpAdj < 0)
         {
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackBleedEffect", otherKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "blackBleedEffect", otherKnightHpAdj);
         }
 
         if (thisKnightHpAdj != 0)
         {
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteDmg", thisKnightHpAdj);
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteHPs", combatResult.TotalRunningHPs[_fighterId]);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "setWhiteDmg", thisKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "setWhiteHPs", combatResult.TotalRunningHPs[_fighterId]);
         }
 
         if (otherKnightHpAdj != 0)
         {
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackDmg", otherKnightHpAdj);
-            JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackHPs", combatResult.TotalRunningHPs[otherFighterId]);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "setBlackDmg", otherKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "setBlackHPs", combatResult.TotalRunningHPs[otherFighterId]);
         }
 
-        JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setSystemMsg", combatResult.Comments);
+        JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", combatResult.Comments);
 
 
 
@@ -478,7 +483,7 @@
         combatMove.FighterId = _fighterId;
 
 
-        var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
         var response = await http.PostAsJsonAsync("Combat/CombatMove", combatMove);
     }
 

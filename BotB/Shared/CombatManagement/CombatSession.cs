@@ -19,6 +19,8 @@ namespace BotB.Shared.CombatManagement
             //initialerMoves.Add(new CombatMove() { FighterId = fighter1Id, Action = CombatActions.UNASSIGNED });
             //initialerMoves.Add(new CombatMove() { FighterId = fighter2Id, Action = CombatActions.UNASSIGNED });
 
+            CombatRounds = new List<CombatRound>();
+
             //CombatRound combatRound = new CombatRound(initialerMoves);
             //CombatRounds.Add(combatRound);
             Fighters = new Dictionary<string, Fighter>();
@@ -30,31 +32,28 @@ namespace BotB.Shared.CombatManagement
 
         public CombatResult AddMove(CombatMove NewMove) 
         {
-            
 
 
-            if (CombatRounds.Count == 0 || CombatRounds[CombatRounds.Count].Moves.Count == 0) 
+
+            if (CombatRounds.Count == 0 || CombatRounds[CombatRounds.Count - 1].Moves.Count == 0) 
             {
-                CombatRounds.Add
-                    (
-                        new CombatRound(new List<CombatMove>())
-                    );
-
-                CombatRounds[CombatRounds.Count - 1].Moves.Add(NewMove);
+                CombatRound newCombatRound = new CombatRound(NewMove);
+                CombatRounds.Add(newCombatRound);
                 return null;
                 //add the move
             } else 
             {
-                CombatRounds[CombatRounds.Count - 1].Moves.Add(NewMove);
 
-                
+                CombatRound thisRound = CombatRounds[CombatRounds.Count - 1];
+
+                thisRound.Moves.Add(NewMove);
 
                 CombatResolverFactory combatResolverFactory = new CombatResolverFactory(this);
                 ICombatInstanceResolver combatInstanceResolver =
                     combatResolverFactory.GetCombatResolver(CombatRounds[CombatRounds.Count - 1].Moves);
 
                 CombatResult combatResult = combatInstanceResolver.Resolve(CombatRounds[CombatRounds.Count - 1].Moves[1]);
-
+                thisRound.Result = combatResult;
                 return combatResult;
 
                 //add the move and get a CombatResult

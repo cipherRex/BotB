@@ -99,12 +99,14 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <returns></returns>
         protected int totalHPs(string fighterId) 
         {
+            const int MAX_POINTS = 15;
 
-            var ret = _combatSession.CombatRounds.Where(x => x.Result != null)
-                       .SelectMany(x => x.Result.HPAdjustments)
-                       .Where(x => x.Key == fighterId)
-                       .Select(x => x.Value)
-                       .Sum();
+            var ret = MAX_POINTS -  
+                    _combatSession.CombatRounds.Where(x => x.Result != null)
+                    .SelectMany(x => x.Result.HPAdjustments)
+                    .Where(x => x.Key == fighterId)
+                    .Select(x => x.Value)
+                    .Sum();
 
             return ret;
 
