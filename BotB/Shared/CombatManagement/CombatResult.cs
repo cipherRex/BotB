@@ -9,7 +9,7 @@ namespace BotB.Shared.CombatManagement
     {
         public Dictionary<string, CombatAnimationInstruction> CombatAnimationInstructions { get; set; }
         public Dictionary<string, int> TotalRunningHPs { get; set; }
-        public Dictionary<string ,int> HPAdjustment { get; set; }
+        public Dictionary<string ,int> HPAdjustments { get; set; }
         public CombatVictory Victory { get; set; }
         public string Comments { get; set; }
         public List<string> ShieldTaunt { get; set; }
@@ -18,6 +18,10 @@ namespace BotB.Shared.CombatManagement
 
         public CombatResult()
         {
+            CombatAnimationInstructions = new Dictionary<string, CombatAnimationInstruction>();
+            TotalRunningHPs = new Dictionary<string, int>();
+            HPAdjustments = new Dictionary<string, int>();
+
             ShieldTaunt = new List<string>();
             ShieldRecoil = new List<string>();
             MoveRestrictions = new List<KeyValuePair<string, CombatActions>>();

@@ -38,17 +38,17 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             CombatResult combatResult = resolve(thisFighterId, opponentFighterId, CombatHistoryResolver);
 
 
-            if (combatResult.HPAdjustment.ContainsKey(thisFighterId))
+            if (combatResult.HPAdjustments.ContainsKey(thisFighterId))
             {
-                combatResult.HPAdjustment[thisFighterId] =
-                    trimExecHpAdjustment(combatResult.HPAdjustment[thisFighterId],
+                combatResult.HPAdjustments[thisFighterId] =
+                    trimExecHpAdjustment(combatResult.HPAdjustments[thisFighterId],
                                         combatResult.TotalRunningHPs[thisFighterId],
                                         MAXIMUM_HEALTH);
             }
-            if (combatResult.HPAdjustment.ContainsKey(opponentFighterId))
+            if (combatResult.HPAdjustments.ContainsKey(opponentFighterId))
             {
-                combatResult.HPAdjustment[opponentFighterId] =
-                    trimExecHpAdjustment(combatResult.HPAdjustment[opponentFighterId],
+                combatResult.HPAdjustments[opponentFighterId] =
+                    trimExecHpAdjustment(combatResult.HPAdjustments[opponentFighterId],
                                         combatResult.TotalRunningHPs[opponentFighterId],
                                         MAXIMUM_HEALTH);
             }
@@ -102,7 +102,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         {
 
             var ret = _combatSession.CombatRounds.Where(x => x.Result != null)
-                       .SelectMany(x => x.Result.HPAdjustment)
+                       .SelectMany(x => x.Result.HPAdjustments)
                        .Where(x => x.Key == fighterId)
                        .Select(x => x.Value)
                        .Sum();

@@ -16,9 +16,11 @@ namespace BotB.Shared.CombatManagement
         /// <returns></returns>
         public static string otherFighterId(string thisFighterId, CombatSession combatSession)
         {
-            return combatSession.CombatRounds[0].Moves
-                    .Where(x => x.FighterId != thisFighterId)
-                    .FirstOrDefault().FighterId;
+            //return combatSession.CombatRounds[0].Moves
+            //        .Where(x => x.FighterId != thisFighterId)
+            //        .FirstOrDefault().FighterId;
+
+            return combatSession.Fighters.Where(x => x.Key != thisFighterId).Select(x=>x.Key).FirstOrDefault();
         }
     }
 }

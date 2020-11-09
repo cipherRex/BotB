@@ -38,7 +38,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.CombatAnimationInstructions[randomLoserFighterId].AnimCommand = AnimationCommands.AC_PARRY;
 
             //loser loses a point
-            combatResult.HPAdjustment[randomLoserFighterId] = -1;
+            combatResult.HPAdjustments[randomLoserFighterId] = -1;
 
             combatResult.TotalRunningHPs[randomWinnerFighterId] = totalHPs(randomWinnerFighterId);
             combatResult.TotalRunningHPs[randomLoserFighterId] = totalHPs(randomLoserFighterId) - 1;

@@ -44,8 +44,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_HEAL;
             combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;
 
-            combatResult.HPAdjustment[thisFighterId] = totalThisHealPoints;
-            combatResult.HPAdjustment[opponentFighterId] = totalOpponentHealPoints;
+            combatResult.HPAdjustments[thisFighterId] = totalThisHealPoints;
+            combatResult.HPAdjustments[opponentFighterId] = totalOpponentHealPoints;
 
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId) + totalThisHealPoints;
             combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalOpponentHealPoints;

@@ -53,7 +53,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             //damage is base 2 plus previous consecutive hits
             int totalHealing = 1 + previousHeals;
-            combatResult.HPAdjustment[opponentFighterId] = totalHealing;
+            combatResult.HPAdjustments[opponentFighterId] = totalHealing;
 
             combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalHealing;
             combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
