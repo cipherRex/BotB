@@ -9,6 +9,11 @@ namespace BotB.Shared.CombatManagement
     {
         List<CombatSession> CombatSessions { get; set; }
 
+        public CombatManager() 
+        {
+            CombatSessions = new List<CombatSession>();
+        }
+
         public CombatSession GetCombatSessionByFighterId(string fighterId) 
         {
 

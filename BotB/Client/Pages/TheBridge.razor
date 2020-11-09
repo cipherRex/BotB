@@ -1,0 +1,439 @@
+﻿
+
+@page "/theBridge/{info}"
+
+@inject IJSRuntime JSRuntime;
+@using BotB.Shared;
+
+@*@using System.Net.Http*@
+@inject HttpClient Http
+@*@inject Arena _arena*@
+@inject IJSRuntime JSRuntime
+@inject IHttpClientFactory HttpClientFactory
+
+@using BotB.Client.Data
+@inject NavigationManager navigationManager
+@using System.Text.Json.Serialization
+@layout EmptyLayout
+@using System.Text.Json
+@using BotB.Shared.CombatManagement
+
+<style>
+    .disabledDiv {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    .enabledDiv {
+        pointer-events: all;
+        opacity: 1;
+    }
+
+    /*    .wrapper {
+        width: 960px;
+        margin: 0 auto;
+    }
+
+    .progress-bar {
+        width: 100%;
+        background-color:#e0e0e0;
+        padding:3px;
+        border-radius:3px;
+    }
+
+    .progress-bar-fill {
+        height: 22px;
+        display: block;
+        background-color: #33cc33;
+        border-radius: 3px;
+        width: 0;
+        transition:width 500ms ease-in-out;
+    }*/
+
+</style>
+
+
+<div class="main">
+    <div class="content px-4">
+
+        <div>
+            You are the @_role Knight
+        </div>
+
+        <div class="webgl-content">
+            @*<div id="unityContainer" style="width: 960px; height: 600px"></div>*@
+            <div id="unityContainer" style="width: 100%; height: auto"></div>
+            <div class="wrapper">
+                <div class="progress-bar">
+                    <span class="progress-bar-fill"></span>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="webgl-logo"></div>
+                <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
+                <div class="title">unity6</div>
+            </div>
+
+            <div class="@_actionsClass">
+
+                <div>
+                    <input type="radio" id="optSwing" name="action" value="Swing" @onclick="@(e => _action = CombatActions.SWING)">
+                    <label for="optSwing">Swing</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="optBlock" name="action" value="Block" @onclick="@(e => _action = CombatActions.BLOCK)">
+                    <label for="optBlock">Block</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="optRest" name="action" value="Rest" @onclick="@(e => _action = CombatActions.REST)">
+                    <label for="optRest">Rest</label>
+                </div>
+
+                <div>
+                    <button type="button" disabled="@DisallowSubmit" @onclick="submitMove">SUBMIT</button>
+
+                    @*<button type="button" @onclick="submitMove">SUBMIT</button>*@
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <button onclick="javascript: intoTheArenaFunctions.fooFunc();">Click me</button>
+        </div>
+
+
+        <div>
+            <span>@_idleMessage</span>
+        </div>
+
+    </div>
+</div>
+
+@code
+{
+    private string _foo = "x";
+
+    [Parameter]
+    public string Info { get; set; }
+
+    private string _role = "";
+    private string _sessionId = "";
+    private string _fighterId = "";
+    private string _playerId = "";
+
+    private CombatActions _action = CombatActions.UNASSIGNED;
+
+    private static Action action;
+    private static Action coundownCompleteAction;
+
+    ChatClient _chatClient = null;
+
+    public string _actionsClass = "disabledDiv";
+    Dictionary<int, string> _javascriptHookFunctionNames = null;
+
+    public CombatResult combatResult = null;
+
+
+    [JSInvokable]
+    public static void OnAnimationIdle()
+    {
+        action.Invoke();
+
+    }
+
+    [JSInvokable]
+    public static void onCountdownComplete()
+    {
+        coundownCompleteAction.Invoke();
+
+    }
+
+
+    private void CoundownComplete()
+    {
+        Random rng = new Random();
+        int i = rng.Next(1, 4);
+
+        switch (i)
+        {
+            case 1:
+                _action = CombatActions.SWING;
+                break;
+
+            case 2:
+                _action = CombatActions.BLOCK;
+                break;
+
+            case 3:
+                _action = CombatActions.REST;
+                break;
+
+
+        }
+
+        submitMove();
+    }
+
+    private void UpdateMessage()
+    {
+        Tuple<string, string> fighterIdAndSessionId = new Tuple<string, string>(_fighterId, _sessionId);
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+        var response = http.PostAsJsonAsync("Combat/AnimationIdled", JsonSerializer.Serialize<Tuple<string, string>>(fighterIdAndSessionId));
+
+
+    }
+
+
+    public bool DisallowSubmit
+    {
+        get
+        {
+            return _action == CombatActions.UNASSIGNED;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        action = UpdateMessage;
+
+        coundownCompleteAction = CoundownComplete;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        _javascriptHookFunctionNames = javascriptHookFunctionNames();
+
+        //﻿{"SessionId":"e0231f99-e3de-422b-b991-4314fcc9ffb2","FighterId":"3a5c704b-07a9-4fcb-81f5-756c9bf6e054","Role":"Black"}
+
+        dynamic dynamicInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(this.Info);
+        _role = dynamicInfo.Role;
+        _sessionId = dynamicInfo.SessionId;
+        _fighterId = dynamicInfo.FighterId;
+        _playerId = dynamicInfo.PlayerId;
+
+
+        _chatClient = new ChatClient(_playerId, navigationManager);
+        await _chatClient.StartAsync();
+
+        _chatClient.CombatRoundResult += OnCombatRoundResult;
+
+        _chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
+    }
+
+    public string _idleMessage = "i";
+
+    //
+    void OnHandleAnimationsIdledResult(object sender, CombatRoundResultEventArgs e)
+    {
+        _idleMessage = "OnHandleAnimationsIdledResult " + DateTime.Now.ToLongTimeString();
+        string jsFunctionName;
+
+        JSRuntime.InvokeVoidAsync("BotB.initCountdown", "");
+
+        if (combatResult != null)
+        {
+            if (combatResult.Victory != null)
+            {
+                if (combatResult.Victory.VictorFighterId == this._fighterId)
+                {
+                    // I win
+                    switch (_role)
+                    {
+                        case "White":
+                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+
+                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                            break;
+
+                        case "Black":
+                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+
+                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                            break;
+
+                    }
+                }
+                else
+                {
+                    // I lose
+                    switch (_role)
+                    {
+                        case "White":
+                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+
+                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                            break;
+
+                        case "Black":
+                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+
+                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                            break;
+
+                    }
+                }
+            }
+        }
+
+        _actionsClass = "enabledDiv";
+        StateHasChanged();
+    }
+
+
+    void OnCombatRoundResult(object sender, CombatRoundResultEventArgs e)
+    {
+
+        string fo0 = "";
+
+        //combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
+
+        //if (combatResult.WhiteAnimationId != AnimationCommand.AC_BLOCK)
+        //{
+        //    string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)combatResult.WhiteAnimationId];
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
+        //}
+        //else
+        //{
+        //    string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)combatResult.WhiteAnimationId];
+
+        //    string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
+
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
+        //}
+
+        //if (combatResult.BlackAnimationId != AnimationCommand.AC_BLOCK)
+        //{
+        //    string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)combatResult.BlackAnimationId];
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
+        //}
+        //else
+        //{
+        //    string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)combatResult.BlackAnimationId];
+
+        //    string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
+
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
+        //}
+
+        //if (combatResult.WhitePlayerAdjustment > 0)
+        //{
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteHealEffect", combatResult.WhitePlayerAdjustment);
+        //}
+        //else if (combatResult.WhitePlayerAdjustment < 0)
+        //{
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteBleedEffect", combatResult.WhitePlayerAdjustment);
+        //}
+
+        //if (combatResult.BlackPlayerAdjustment > 0)
+        //{
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackHealEffect", combatResult.BlackPlayerAdjustment);
+        //}
+        //else if (combatResult.BlackPlayerAdjustment < 0)
+        //{
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackBleedEffect", combatResult.BlackPlayerAdjustment);
+        //}
+
+        //if (combatResult.WhitePlayerAdjustment != 0)
+        //{
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteDmg", combatResult.WhitePlayerAdjustment);
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteHPs", combatResult.WhitePlayerTotalHP);
+        //}
+
+        //if (combatResult.BlackPlayerAdjustment != 0)
+        //{
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackDmg", combatResult.BlackPlayerAdjustment);
+        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackHPs", combatResult.BlackPlayerTotalHP);
+        //}
+
+        //JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setSystemMsg", combatResult.Comments);
+
+
+
+        StateHasChanged();
+
+    }
+
+    private string buildSerializedBooleanArray(bool[] boolArray)
+    {
+        string tmp = "{\"Items\":[";
+
+        for (int i = 0; i < boolArray.Length; i++)
+        {
+            tmp = tmp + "\"" + boolArray[i].ToString() + "\"";
+            if (i != boolArray.Length - 1)
+            {
+                tmp = tmp + ",";
+            }
+        }
+
+        tmp = tmp + "]}";
+        return tmp;
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("botBFunctions.startGame");
+        }
+    }
+
+    async void submitMove()
+    {
+
+        string foo = "";
+
+        //JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
+
+        //_actionsClass = "disabledDiv";
+        //StateHasChanged();
+
+        //CombatMove combatMove = new CombatMove() { SessionId = _sessionId, FighterId = _fighterId, PlayerId = _playerId, Action = _action };
+
+        //var http = HttpClientFactory.CreateClient("IntoTheArena.AnonymousAPI");
+        //var response = await http.PostAsJsonAsync("Combat/CombatMove", combatMove);
+    }
+
+    private Dictionary<int, string> javascriptHookFunctionNames()
+    {
+        Dictionary<int, string> dic = new Dictionary<int, string>();
+
+        dic[(int)AnimationCommands.AC_BLOCK] = "Block";
+
+        dic[(int)AnimationCommands.AC_SWING] = "Swing";
+        dic[(int)AnimationCommands.AC_PARRY] = "Parry";
+        dic[(int)AnimationCommands.AC_COUNTERPARRY] = "CounterParry";
+        dic[(int)AnimationCommands.AC_KICK] = "Kick";
+        dic[(int)AnimationCommands.AC_CLEAVE] = "TwoHanded";
+
+        dic[(int)AnimationCommands.AC_HEAL] = "Heal";
+
+        dic[(int)AnimationCommands.AC_GROINED] = "Groined";
+        dic[(int)AnimationCommands.AC_CLEAVED] = "Gashed";
+
+        dic[(int)AnimationCommands.AC_DIE] = "Die";
+        dic[(int)AnimationCommands.AC_CELEBRATE] = "Celebrate";
+        dic[(int)AnimationCommands.AC_RUN] = "Run";
+        dic[(int)AnimationCommands.AC_LAUGH] = "Laugh";
+
+
+        return dic;
+
+
+
+    }
+
+
+}

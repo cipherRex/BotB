@@ -18,6 +18,8 @@ namespace BotB.Shared.CombatManagement
 
             //CombatRound combatRound = new CombatRound(initialerMoves);
             //CombatRounds.Add(combatRound);
+            Fighters = new Dictionary<string, string>();
+
             Fighters[fighter1Id] = "White";
             Fighters[fighter2Id] = "Black";
         }
