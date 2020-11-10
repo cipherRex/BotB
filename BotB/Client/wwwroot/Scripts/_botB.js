@@ -70,30 +70,35 @@ window.botBFunctions = {
     },
 
     initCountdown: function () {
-
+       // alert('setInterval');
         _size = 0;
         _interval = setInterval(
             function () {
                 
-                _size = _size + 10;
-                $('.progress-bar-fill').css('width', _size + '%');
+                _size = _size + 20;
+                //$('#myBar').css('width', _size + '%');
+                //elem.style.width = width + "%";
+                $('#myBar').css('width', _size + '%');
+
 
                 if (_size >= 100) {
                     _size = 0;
                     clearInterval(_interval);
                     botBFunctions.countdownComplete();
+                    //botBFunctions.cancelCountdown();
                 }
 
-            }, 1000
+            }, 3000
         );
 
     },
 
     cancelCountdown: function () {
-
+     //   alert('cancelCountdown');
         _size = 0;
         clearInterval(_interval);
-        $('.progress-bar-fill').css('width', _size + '%');
+        //$('.progress-bar-fill').css('width', _size + '%');
+        $('#myBar').css('width', _size + '%');
     },
 
 
@@ -263,19 +268,19 @@ window.botBFunctions = {
 
 
 
-    setWhiteHPs: function (amt) {
+    whiteSetHPs: function (amt) {
         unityInstance.SendMessage("JavascriptHook", "SetWhiteHPs", amt);
     },
 
-    setBlackHPs: function (amt) {
+    blackSetHPs: function (amt) {
         unityInstance.SendMessage("JavascriptHook", "SetBlackHPs", amt);
     },
 
-    setWhiteDmg: function (amt) {
+    whiteSetDmg: function (amt) {
         unityInstance.SendMessage("JavascriptHook", "setWhiteDmg", amt);
     },
 
-    setBlackDmg: function (amt) {
+    blackSetDmg: function (amt) {
         unityInstance.SendMessage("JavascriptHook", "setBlackDmg", amt);
     },
 

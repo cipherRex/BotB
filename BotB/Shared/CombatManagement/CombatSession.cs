@@ -1,6 +1,7 @@
 ﻿using BotB.Shared.CombatManagement.CombatInstanceResolvers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BotB.Shared.CombatManagement
@@ -50,7 +51,13 @@ namespace BotB.Shared.CombatManagement
                 ICombatInstanceResolver combatInstanceResolver =
                     combatResolverFactory.GetCombatResolver(CombatRounds[CombatRounds.Count - 1].Moves);
 
-                CombatResult combatResult = combatInstanceResolver.Resolve(CombatRounds[CombatRounds.Count - 1].Moves[1]);
+                CombatResult combatResult = combatInstanceResolver.Resolve(CombatRounds[CombatRounds.Count - 1]
+                    .Moves.Where
+                        (
+                            x => x.FighterId ==
+                            Fighters.Where(x => x.Value.Color == "White").FirstOrDefault().Value.id
+                        ).FirstOrDefault()
+                    ) ;
                 thisRound.Result = combatResult;
                 return combatResult;
 

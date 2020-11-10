@@ -77,13 +77,13 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             }
 
             //damage is base 2 plus previous consecutive hits
-            int totalOpponentDamage = -1 * (BASE_DAMAGE + previousSuccessfulStrikes);
+            int totalOpponentDamage = BASE_DAMAGE + previousSuccessfulStrikes;
             //combatResult.HPAdjustments[opponentFighterId] = totalOpponentDamage;
-            combatResult.HPAdjustments.Add(opponentFighterId, totalOpponentDamage);
+            combatResult.HPAdjustments.Add(opponentFighterId, totalOpponentDamage * -1);
 
             //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) - totalOpponentDamage;
             //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
-            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId) + totalOpponentDamage);
+            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId) - totalOpponentDamage);
             combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId));
 
             return combatResult;
