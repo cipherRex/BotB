@@ -24,8 +24,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
+        protected override CombatResult resolve(List<CombatMove> Moves)
         {
+            //
+            string thisFighterId = Moves[0].FighterId;
+            string opponentFighterId = Moves[1].FighterId;
+
             CombatResult combatResult = new CombatResult();
 
             //randomly determine which fighter is the loser:
@@ -53,7 +57,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             //combatResult.TotalRunningHPs[randomWinnerFighterId] = totalHPs(randomWinnerFighterId);
             //combatResult.TotalRunningHPs[randomLoserFighterId] = totalHPs(randomLoserFighterId) - 1;
+            int tot1 = totalHPs(randomWinnerFighterId);
+            int tot2 = totalHPs(randomLoserFighterId);
+
             combatResult.TotalRunningHPs.Add(randomWinnerFighterId, totalHPs(randomWinnerFighterId));
+
             combatResult.TotalRunningHPs.Add(randomLoserFighterId, totalHPs(randomLoserFighterId) - 1);
 
             combatResult.Comments = string.Format("Both knights swing. {0} counterparries and {1} takes damage.", thisFighterId, randomLoserFighterId) ;

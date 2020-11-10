@@ -25,9 +25,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
+        protected override CombatResult resolve(List<CombatMove> Moves)
         {
             const int BASE_DAMAGE = 2;
+
+            string swingingFighterId = Moves.Where(x=> x.Action == CombatActions.SWING).FirstOrDefault().FighterId;
+            string restingFighterId = Moves.Where(x => x.Action == CombatActions.REST).FirstOrDefault().FighterId;
 
             CombatResult combatResult = new CombatResult();
             ICombatHistoryResolver successfulStrikeHistoryResolver = new SuccessfulStrikeHistoryResolver(_combatSession);
@@ -35,7 +38,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //get count of how may times Opponent Fighter has previously been hit (consecutively)
             //int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId, opponentFighterId);
             //int previousSuccessfulStrikes = numberPreviousSuccessfulStrikes(thisFighterId);
-            int previousSuccessfulStrikes = successfulStrikeHistoryResolver.Resolve(thisFighterId);
+            int previousSuccessfulStrikes = successfulStrikeHistoryResolver.Resolve(swingingFighterId);
 
             //if no previous hits then MINOR damage animations
             if (previousSuccessfulStrikes == 0)
@@ -43,17 +46,17 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_KICK;
                 //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_GROINED;
                 combatResult.CombatAnimationInstructions.Add(
-                    thisFighterId,
+                    swingingFighterId,
                     new CombatAnimationInstruction()
-                    { FighterID = thisFighterId, AnimCommand = AnimationCommands.AC_KICK }
+                    { FighterID = swingingFighterId, AnimCommand = AnimationCommands.AC_KICK }
                     );
                 combatResult.CombatAnimationInstructions.Add(
-                    opponentFighterId,
+                    restingFighterId,
                     new CombatAnimationInstruction()
-                    { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_GROINED }
+                    { FighterID = restingFighterId, AnimCommand = AnimationCommands.AC_GROINED }
                     );
 
-                combatResult.Comments = string.Format("{0} takes damage.", opponentFighterId);
+                combatResult.Comments = string.Format("{0} takes damage.", restingFighterId);
 
             }
             //if there are previous consecutive hits, them MAJOR damage animations
@@ -62,29 +65,29 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_CLEAVE;
                 //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_CLEAVED;
                 combatResult.CombatAnimationInstructions.Add(
-                    thisFighterId,
+                    swingingFighterId,
                     new CombatAnimationInstruction()
-                    { FighterID = thisFighterId, AnimCommand = AnimationCommands.AC_CLEAVE }
+                    { FighterID = swingingFighterId, AnimCommand = AnimationCommands.AC_CLEAVE }
                     );
                 combatResult.CombatAnimationInstructions.Add(
-                    opponentFighterId,
+                    restingFighterId,
                     new CombatAnimationInstruction()
-                    { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_CLEAVED }
+                    { FighterID = restingFighterId, AnimCommand = AnimationCommands.AC_CLEAVED }
                     );
 
-                combatResult.Comments = string.Format("{0} takes lots of damage.", opponentFighterId);
+                combatResult.Comments = string.Format("{0} takes lots of damage.", restingFighterId);
 
             }
 
             //damage is base 2 plus previous consecutive hits
             int totalOpponentDamage = BASE_DAMAGE + previousSuccessfulStrikes;
             //combatResult.HPAdjustments[opponentFighterId] = totalOpponentDamage;
-            combatResult.HPAdjustments.Add(opponentFighterId, totalOpponentDamage * -1);
+            combatResult.HPAdjustments.Add(restingFighterId, totalOpponentDamage * -1);
 
             //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) - totalOpponentDamage;
             //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
-            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId) - totalOpponentDamage);
-            combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId));
+            combatResult.TotalRunningHPs.Add(restingFighterId, totalHPs(restingFighterId) - totalOpponentDamage);
+            combatResult.TotalRunningHPs.Add(swingingFighterId, totalHPs(swingingFighterId));
 
             return combatResult;
         }

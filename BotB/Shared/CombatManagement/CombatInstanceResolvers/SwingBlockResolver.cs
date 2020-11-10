@@ -25,8 +25,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
+        protected override CombatResult resolve(List<CombatMove> Moves)
         {
+
+            string swingingFighterId = Moves.Where(x => x.Action == CombatActions.SWING).FirstOrDefault().FighterId;
+            string blockingFighterId = Moves.Where(x => x.Action == CombatActions.BLOCK).FirstOrDefault().FighterId;
+
             CombatResult combatResult = new CombatResult();
             ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
 
@@ -35,34 +39,34 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //get count of how may times Opponent Fighter has previously been blocked (consecutively)
             //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
             //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
-            int numberPreviousTimesBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
+            int numberPreviousTimesBlocked = successfulBlockHistoryResolver.Resolve(swingingFighterId);
 
             //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_SWING;
             //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
-            combatResult.CombatAnimationInstructions.Add(thisFighterId, new CombatAnimationInstruction() {FighterID = thisFighterId , AnimCommand = AnimationCommands.AC_SWING });
-            combatResult.CombatAnimationInstructions.Add(opponentFighterId, new CombatAnimationInstruction() { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_BLOCK });
+            combatResult.CombatAnimationInstructions.Add(swingingFighterId, new CombatAnimationInstruction() {FighterID = swingingFighterId , AnimCommand = AnimationCommands.AC_SWING });
+            combatResult.CombatAnimationInstructions.Add(blockingFighterId, new CombatAnimationInstruction() { FighterID = blockingFighterId, AnimCommand = AnimationCommands.AC_BLOCK });
 
             //add flag to signal recoil animation
-            combatResult.ShieldRecoil.Add(opponentFighterId);
+            combatResult.ShieldRecoil.Add(blockingFighterId);
 
-            comments = string.Format("{0} blocks.", opponentFighterId);
+            comments = string.Format("{0} blocks.", blockingFighterId);
 
             //If This Player was blocked previously then trigger taunting animation and restrict next move:
             if (numberPreviousTimesBlocked > 1)
             {
-                combatResult.ShieldTaunt.Add(opponentFighterId);
+                combatResult.ShieldTaunt.Add(blockingFighterId);
                 //This Player cant swing next turn
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.SWING));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(swingingFighterId, CombatActions.SWING));
                 //So opponent cant block
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.BLOCK));
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(blockingFighterId, CombatActions.BLOCK));
 
-                comments = comments + string.Format(" {0} cannot swing next turn, so {1} cannot use shield", thisFighterId, opponentFighterId);
+                comments = comments + string.Format(" {0} cannot swing next turn, so {1} cannot use shield", swingingFighterId, blockingFighterId);
             }
 
             //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
             //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId);
-            combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId));
-            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId));
+            combatResult.TotalRunningHPs.Add(swingingFighterId, totalHPs(swingingFighterId));
+            combatResult.TotalRunningHPs.Add(blockingFighterId, totalHPs(blockingFighterId));
 
             combatResult.Comments = comments;
 

@@ -51,13 +51,7 @@ namespace BotB.Shared.CombatManagement
                 ICombatInstanceResolver combatInstanceResolver =
                     combatResolverFactory.GetCombatResolver(CombatRounds[CombatRounds.Count - 1].Moves);
 
-                CombatResult combatResult = combatInstanceResolver.Resolve(CombatRounds[CombatRounds.Count - 1]
-                    .Moves.Where
-                        (
-                            x => x.FighterId ==
-                            Fighters.Where(x => x.Value.Color == "White").FirstOrDefault().Value.id
-                        ).FirstOrDefault()
-                    ) ;
+                CombatResult combatResult = combatInstanceResolver.Resolve(CombatRounds[CombatRounds.Count - 1].Moves) ;
                 thisRound.Result = combatResult;
                 return combatResult;
 

@@ -8,11 +8,13 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 {
     public interface ICombatInstanceResolver
     {
-        CombatResult Resolve(CombatMove OpponentMove);
+        CombatResult Resolve(List<CombatMove> Moves);
     }
 
     public abstract class CombatInstanceResolverBase: ICombatInstanceResolver
     {
+        const int MAX_POINTS = 15;
+
         protected CombatSession _combatSession;
 
         public CombatInstanceResolverBase(CombatSession Session) 
@@ -20,36 +22,47 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             _combatSession = Session;
         }
 
-        protected abstract CombatResult resolve(string ThisFighterId, string OpponentFighterId);
+        protected abstract CombatResult resolve(List<CombatMove> Moves);
 
 
         //public virtual CombatResult Resolve(CombatMove OpponentMove)
-        public CombatResult Resolve(CombatMove OpponentMove)
+        public CombatResult Resolve(List<CombatMove> Moves)
         {
 
-            int MAXIMUM_HEALTH = 15;
+           
 
-            string opponentFighterId = OpponentMove.FighterId;
-            //string thisFighterId = otherFighterId(opponentFighterId);
-            string thisFighterId = CombatHelpers.otherFighterId(opponentFighterId, _combatSession);
-            
+            //string opponentFighterId = OpponentMove.FighterId;
+            //string thisFighterId = CombatHelpers.otherFighterId(opponentFighterId, _combatSession);
 
-            CombatResult combatResult = resolve(thisFighterId, opponentFighterId);
+            string thisFighterId = Moves[0].FighterId;
+            string opponentFighterId = Moves[1].FighterId;
 
+            CombatResult combatResult = resolve( Moves);
 
-            if (combatResult.HPAdjustments.ContainsKey(thisFighterId))
+            if (combatResult.HPAdjustments.ContainsKey(thisFighterId) && combatResult.HPAdjustments[thisFighterId] > 0)
             {
                 combatResult.HPAdjustments[thisFighterId] =
                     trimExecHpAdjustment(combatResult.HPAdjustments[thisFighterId],
                                         combatResult.TotalRunningHPs[thisFighterId],
-                                        MAXIMUM_HEALTH);
+                                        MAX_POINTS);
             }
-            if (combatResult.HPAdjustments.ContainsKey(opponentFighterId))
+            if (combatResult.HPAdjustments.ContainsKey(opponentFighterId) && combatResult.HPAdjustments[opponentFighterId] > 0)
             {
                 combatResult.HPAdjustments[opponentFighterId] =
                     trimExecHpAdjustment(combatResult.HPAdjustments[opponentFighterId],
                                         combatResult.TotalRunningHPs[opponentFighterId],
-                                        MAXIMUM_HEALTH);
+                                        MAX_POINTS);
+            }
+
+
+            if (combatResult.TotalRunningHPs[thisFighterId] > MAX_POINTS) 
+            {
+                combatResult.TotalRunningHPs[thisFighterId] = MAX_POINTS;
+            }
+
+            if (combatResult.TotalRunningHPs[opponentFighterId] > MAX_POINTS)
+            {
+                combatResult.TotalRunningHPs[opponentFighterId] = MAX_POINTS;
             }
 
 
@@ -99,16 +112,37 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <returns></returns>
         protected int totalHPs(string fighterId) 
         {
-            const int MAX_POINTS = 15;
 
-            var ret = MAX_POINTS -  
+
+            return MAX_POINTS +
                     _combatSession.CombatRounds.Where(x => x.Result != null)
                     .SelectMany(x => x.Result.HPAdjustments)
                     .Where(x => x.Key == fighterId)
                     .Select(x => x.Value)
                     .Sum();
 
-            return ret;
+            //int ret = 0;
+
+            //foreach(CombatRound round in _combatSession.CombatRounds) 
+            //{ 
+            //    if (round.Result != null) 
+            //    {
+            //        CombatResult combatResult = round.Result;
+            //        foreach(KeyValuePair<string ,int> adjustment in combatResult.HPAdjustments) 
+            //        {
+            //            if (adjustment.Key == fighterId) 
+            //            {
+            //                if (adjustment.Key == fighterId)
+            //                    ret = ret + adjustment.Value;
+            //            }
+            //        }
+            //    }
+            
+            //}
+
+
+
+            // return MAX_POINTS + ret;
 
         }
 

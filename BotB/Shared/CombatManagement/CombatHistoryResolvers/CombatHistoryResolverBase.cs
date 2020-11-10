@@ -51,7 +51,7 @@ namespace BotB.Shared.CombatManagement.CombatHistoryResolvers
                     }
                     else
                     {
-                        break;
+                        return ret;
                     }
                 }
             }

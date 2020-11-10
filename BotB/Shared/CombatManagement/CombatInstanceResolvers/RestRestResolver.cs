@@ -25,8 +25,13 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
+        protected override CombatResult resolve(List<CombatMove> Moves)
         {
+
+            string thisFighterId = Moves[0].FighterId; 
+            string opponentFighterId = Moves[1].FighterId;
+
+
             CombatResult combatResult = new CombatResult();
 
             ICombatHistoryResolver successfulHealHistoryResolver = new SuccessfulHealHistoryResolver(_combatSession);

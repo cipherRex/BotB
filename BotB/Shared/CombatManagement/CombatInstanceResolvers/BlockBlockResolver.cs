@@ -25,9 +25,11 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <param name="thisFighterId"></param>
         /// <param name="opponentFighterId"></param>
         /// <returns></returns>
-        protected override CombatResult resolve(string thisFighterId, 
-                                                string opponentFighterId)
+        protected override CombatResult resolve(List<CombatMove> Moves)
         {
+            string thisFighterId = Moves[0].FighterId;
+            string opponentFighterId = Moves[1].FighterId;
+
             CombatResult combatResult = new CombatResult();
             string comments = "Both knights block.";
 
@@ -37,8 +39,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
             //int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId);
             //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
-            int numTimesThisFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(opponentFighterId);
-            int numTimesOpponentFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
+            int numTimesThisFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
+            int numTimesOpponentFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(opponentFighterId);
 
             //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
             //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
@@ -53,8 +55,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 combatResult.ShieldTaunt.Add(opponentFighterId);
                 //This Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
-                //So Opponent Fighter cant block either
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.BLOCK));
+                //So Opponent Fighter cant swing either
+                //combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.SWING));
             }
 
             if (numTimesOpponentFighterHasBeenBlocked > 1)
@@ -64,7 +66,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 //Opponent Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.BLOCK));
                 //So This Fighter cant block either
-                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
+                //combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
             }
 
             //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);

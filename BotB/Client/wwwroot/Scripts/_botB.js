@@ -70,14 +70,11 @@ window.botBFunctions = {
     },
 
     initCountdown: function () {
-       // alert('setInterval');
         _size = 0;
         _interval = setInterval(
             function () {
                 
-                _size = _size + 20;
-                //$('#myBar').css('width', _size + '%');
-                //elem.style.width = width + "%";
+                _size = _size + 10;
                 $('#myBar').css('width', _size + '%');
 
 
@@ -85,19 +82,17 @@ window.botBFunctions = {
                     _size = 0;
                     clearInterval(_interval);
                     botBFunctions.countdownComplete();
-                    //botBFunctions.cancelCountdown();
+
                 }
 
-            }, 3000
+            }, 1000
         );
 
     },
 
     cancelCountdown: function () {
-     //   alert('cancelCountdown');
         _size = 0;
         clearInterval(_interval);
-        //$('.progress-bar-fill').css('width', _size + '%');
         $('#myBar').css('width', _size + '%');
     },
 
