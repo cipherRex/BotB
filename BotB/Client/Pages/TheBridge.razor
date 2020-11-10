@@ -29,7 +29,7 @@
         opacity: 1;
     }
 
-    /*    .wrapper {
+        .wrapper {
         width: 960px;
         margin: 0 auto;
     }
@@ -48,7 +48,7 @@
         border-radius: 3px;
         width: 0;
         transition:width 500ms ease-in-out;
-    }*/
+    }*/*/
 
 </style>
 
@@ -58,6 +58,9 @@
 
         <div>
             You are the @_role Knight
+        </div>
+        <div>
+            Your fighte Id is @_fighterId
         </div>
 
         <div class="webgl-content">
@@ -133,7 +136,7 @@
     public string _actionsClass = "disabledDiv";
     Dictionary<int, string> _javascriptHookFunctionNames = null;
 
-    public CombatResult combatResult = null;
+    public CombatResult _combatResult = null;
 
 
     [JSInvokable]
@@ -176,19 +179,8 @@
 
     private void sendAnimationIdleMessage()
     {
-        //Tuple<string, string> fighterIdAndSessionId = new Tuple<string, string>(_fighterId, _sessionId);
-        //var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
-        //var response = http.PostAsJsonAsync("Combat/AnimationIdled", JsonSerializer.Serialize<Tuple<string, string>>(fighterIdAndSessionId));
-
-        //Tuple<string, string> fighterIdAndSessionId = new Tuple<string, string>(_fighterId);
-
-
-        _idleMessage = "HELLO";
-        StateHasChanged();
-
         var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
         var response = http.PostAsJsonAsync("Combat/AnimationIdled", _fighterId);
-
     }
 
 
@@ -236,13 +228,17 @@
         _idleMessage = "OnHandleAnimationsIdledResult " + DateTime.Now.ToLongTimeString();
         string jsFunctionName;
 
-        JSRuntime.InvokeVoidAsync("BotB.initCountdown", "");
+        JSRuntime.InvokeVoidAsync("botBFunctions.initCountdown");
 
-        if (combatResult != null)
+        if (_combatResult != null)
         {
-            if (combatResult.Victory != null)
+
+            if (_combatResult.Victory != null)
             {
-                if (combatResult.Victory.VictorFighterId == this._fighterId)
+                JSRuntime.InvokeVoidAsync("botBFunctions.rotateCamera");
+                JSRuntime.InvokeVoidAsync("botBFunctions.playVictoryCheers");
+
+                if (_combatResult.Victory.VictorFighterId == this._fighterId)
                 {
                     // I win
                     switch (_role)
@@ -299,17 +295,19 @@
     void OnCombatRoundResult(object sender, CombatRoundResultEventArgs e)
     {
 
-        combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
+        _combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
 
-        string otherFighterId = combatResult.CombatAnimationInstructions.
-                                                        Where(x => x.Key != _fighterId).FirstOrDefault().
-                                                        Value.FighterID;
+        Console.WriteLine(e.MessageContent);
 
-        AnimationCommands thisKnightAnimationCommand = combatResult.CombatAnimationInstructions[_fighterId].AnimCommand;
-        AnimationCommands otherKnightAnimationCommand = combatResult.CombatAnimationInstructions[otherFighterId].AnimCommand;
+        string otherFighterId = _combatResult.CombatAnimationInstructions.
+                                                    Where(x => x.Key != _fighterId).FirstOrDefault().
+                                                    Value.FighterID;
 
-        int thisKnightHpAdj = combatResult.HPAdjustments.ContainsKey(_playerId) ? combatResult.HPAdjustments[_playerId] : 0;
-        int otherKnightHpAdj = combatResult.HPAdjustments.ContainsKey(_playerId) ? combatResult.HPAdjustments[otherFighterId] : 0;
+        AnimationCommands thisKnightAnimationCommand = _combatResult.CombatAnimationInstructions[_fighterId].AnimCommand;
+        AnimationCommands otherKnightAnimationCommand = _combatResult.CombatAnimationInstructions[otherFighterId].AnimCommand;
+
+        int thisKnightHpAdj = _combatResult.HPAdjustments.ContainsKey(_playerId) ? _combatResult.HPAdjustments[_playerId] : 0;
+        int otherKnightHpAdj = _combatResult.HPAdjustments.ContainsKey(_playerId) ? _combatResult.HPAdjustments[otherFighterId] : 0;
 
         if (thisKnightAnimationCommand != AnimationCommands.AC_BLOCK)
         {
@@ -360,16 +358,16 @@
         if (thisKnightHpAdj != 0)
         {
             JSRuntime.InvokeVoidAsync("botBFunctions." + "setWhiteDmg", thisKnightHpAdj);
-            JSRuntime.InvokeVoidAsync("botBFunctions." + "setWhiteHPs", combatResult.TotalRunningHPs[_fighterId]);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "setWhiteHPs", _combatResult.TotalRunningHPs[_fighterId]);
         }
 
         if (otherKnightHpAdj != 0)
         {
             JSRuntime.InvokeVoidAsync("botBFunctions." + "setBlackDmg", otherKnightHpAdj);
-            JSRuntime.InvokeVoidAsync("botBFunctions." + "setBlackHPs", combatResult.TotalRunningHPs[otherFighterId]);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + "setBlackHPs", _combatResult.TotalRunningHPs[otherFighterId]);
         }
 
-        JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", combatResult.Comments);
+        JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", _combatResult.Comments);
 
 
 
@@ -469,7 +467,6 @@
     async void submitMove()
     {
 
-        string foo = "";
 
         JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
 

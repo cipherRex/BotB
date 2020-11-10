@@ -69,7 +69,7 @@ window.botBFunctions = {
         });;
     },
 
-    initCountdown: function (x) {
+    initCountdown: function () {
 
         _size = 0;
         _interval = setInterval(
@@ -87,9 +87,10 @@ window.botBFunctions = {
             }, 1000
         );
 
-},
+    },
 
     cancelCountdown: function () {
+
         _size = 0;
         clearInterval(_interval);
         $('.progress-bar-fill').css('width', _size + '%');
@@ -284,14 +285,14 @@ window.botBFunctions = {
 
     hideHPLabels: function () {
         unityInstance.SendMessage("JavascriptHook", "hideHPLabels");
+    },
+
+    rotateCamera: function () {
+        unityInstance.SendMessage("JavascriptHook", "endGame");
+    },
+
+    playVictoryCheers: function () {
+        unityInstance.SendMessage("JavascriptHook", "PlayVictoryCheers");
     }
-
-
-
-
-
-
-
-
 };
 

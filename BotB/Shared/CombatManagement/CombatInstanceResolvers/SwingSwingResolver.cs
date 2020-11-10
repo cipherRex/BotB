@@ -54,7 +54,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //combatResult.TotalRunningHPs[randomWinnerFighterId] = totalHPs(randomWinnerFighterId);
             //combatResult.TotalRunningHPs[randomLoserFighterId] = totalHPs(randomLoserFighterId) - 1;
             combatResult.TotalRunningHPs.Add(randomWinnerFighterId, totalHPs(randomWinnerFighterId));
-            combatResult.TotalRunningHPs.Add(randomLoserFighterId, totalHPs(randomLoserFighterId));
+            combatResult.TotalRunningHPs.Add(randomLoserFighterId, totalHPs(randomLoserFighterId) - 1);
 
             combatResult.Comments = string.Format("Both knights swing. {0} counterparries and {1} takes damage.", thisFighterId, randomLoserFighterId) ;
 
