@@ -41,14 +41,28 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //int totalOpponentHealPoints = numberPreviousSuccessfulHeals(opponentFighterId);
             int totalOpponentHealPoints = 1 + successfulHealHistoryResolver.Resolve(opponentFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_HEAL;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;
+            //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_HEAL;
+            //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;
+            combatResult.CombatAnimationInstructions.Add(thisFighterId, new CombatAnimationInstruction() 
+            { 
+                FighterID = thisFighterId,
+                AnimCommand = AnimationCommands.AC_HEAL
+            });
+            combatResult.CombatAnimationInstructions.Add(opponentFighterId, new CombatAnimationInstruction()
+            {
+                FighterID = opponentFighterId,
+                AnimCommand = AnimationCommands.AC_HEAL
+            });
 
-            combatResult.HPAdjustments[thisFighterId] = totalThisHealPoints;
-            combatResult.HPAdjustments[opponentFighterId] = totalOpponentHealPoints;
+            //combatResult.HPAdjustments[thisFighterId] = totalThisHealPoints;
+            //combatResult.HPAdjustments[opponentFighterId] = totalOpponentHealPoints;
+            combatResult.HPAdjustments.Add(thisFighterId, totalThisHealPoints);
+            combatResult.HPAdjustments.Add(opponentFighterId, totalOpponentHealPoints);
 
-            combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId) + totalThisHealPoints;
-            combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalOpponentHealPoints;
+            //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId) + totalThisHealPoints;
+            //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalOpponentHealPoints;
+            combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId) + totalThisHealPoints);
+            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId) + totalOpponentHealPoints);
 
             combatResult.Comments = "Both knights heal.";
 

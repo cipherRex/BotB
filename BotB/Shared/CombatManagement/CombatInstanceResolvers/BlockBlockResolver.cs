@@ -40,8 +40,12 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             int numTimesThisFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(opponentFighterId);
             int numTimesOpponentFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            combatResult.CombatAnimationInstructions.Add(thisFighterId,
+                new CombatAnimationInstruction() { FighterID = thisFighterId, AnimCommand = AnimationCommands.AC_BLOCK });
+            combatResult.CombatAnimationInstructions.Add(opponentFighterId,
+                new CombatAnimationInstruction() { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_BLOCK });
 
             if (numTimesThisFighterHasBeenBlocked > 1)
             {
@@ -63,8 +67,10 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
             }
 
-            combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
-            combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId);
+            //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+            //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId);
+            combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId));
+            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId));
 
             combatResult.Comments = comments;
 

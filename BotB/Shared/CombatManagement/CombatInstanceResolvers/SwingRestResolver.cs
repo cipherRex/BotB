@@ -27,6 +27,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
         /// <returns></returns>
         protected override CombatResult resolve(string thisFighterId, string opponentFighterId)
         {
+            const int BASE_DAMAGE = 2;
+
             CombatResult combatResult = new CombatResult();
             ICombatHistoryResolver successfulStrikeHistoryResolver = new SuccessfulStrikeHistoryResolver(_combatSession);
 
@@ -38,8 +40,18 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //if no previous hits then MINOR damage animations
             if (previousSuccessfulStrikes == 0)
             {
-                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_KICK;
-                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_GROINED;
+                //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_KICK;
+                //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_GROINED;
+                combatResult.CombatAnimationInstructions.Add(
+                    thisFighterId,
+                    new CombatAnimationInstruction()
+                    { FighterID = thisFighterId, AnimCommand = AnimationCommands.AC_KICK }
+                    );
+                combatResult.CombatAnimationInstructions.Add(
+                    opponentFighterId,
+                    new CombatAnimationInstruction()
+                    { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_GROINED }
+                    );
 
                 combatResult.Comments = string.Format("{0} takes damage.", opponentFighterId);
 
@@ -47,20 +59,32 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //if there are previous consecutive hits, them MAJOR damage animations
             else
             {
-                combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_CLEAVE;
-                combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_CLEAVED;
+                //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_CLEAVE;
+                //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_CLEAVED;
+                combatResult.CombatAnimationInstructions.Add(
+                    thisFighterId,
+                    new CombatAnimationInstruction()
+                    { FighterID = thisFighterId, AnimCommand = AnimationCommands.AC_CLEAVE }
+                    );
+                combatResult.CombatAnimationInstructions.Add(
+                    opponentFighterId,
+                    new CombatAnimationInstruction()
+                    { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_CLEAVED }
+                    );
 
                 combatResult.Comments = string.Format("{0} takes lots of damage.", opponentFighterId);
 
             }
 
             //damage is base 2 plus previous consecutive hits
-            int totalOpponentDamage = -2 - previousSuccessfulStrikes;
-            combatResult.HPAdjustments[opponentFighterId] = totalOpponentDamage;
+            int totalOpponentDamage = -1 * (BASE_DAMAGE + previousSuccessfulStrikes);
+            //combatResult.HPAdjustments[opponentFighterId] = totalOpponentDamage;
+            combatResult.HPAdjustments.Add(opponentFighterId, totalOpponentDamage);
 
-            combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) - totalOpponentDamage;
-            combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
-
+            //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) - totalOpponentDamage;
+            //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId) + totalOpponentDamage);
+            combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId));
 
             return combatResult;
         }

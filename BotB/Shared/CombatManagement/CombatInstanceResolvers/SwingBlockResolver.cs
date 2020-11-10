@@ -59,8 +59,10 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 comments = comments + string.Format(" {0} cannot swing next turn, so {1} cannot use shield", thisFighterId, opponentFighterId);
             }
 
-            combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
-            combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId);
+            //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+            //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId);
+            combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId));
+            combatResult.TotalRunningHPs.Add(opponentFighterId, totalHPs(opponentFighterId));
 
             combatResult.Comments = comments;
 

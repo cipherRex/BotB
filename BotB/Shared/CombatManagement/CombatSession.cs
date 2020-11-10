@@ -33,9 +33,7 @@ namespace BotB.Shared.CombatManagement
         public CombatResult AddMove(CombatMove NewMove) 
         {
 
-
-
-            if (CombatRounds.Count == 0 || CombatRounds[CombatRounds.Count - 1].Moves.Count == 0) 
+            if (CombatRounds.Count == 0 || CombatRounds[CombatRounds.Count - 1].Moves.Count % 2 == 0) 
             {
                 CombatRound newCombatRound = new CombatRound(NewMove);
                 CombatRounds.Add(newCombatRound);
@@ -58,10 +56,7 @@ namespace BotB.Shared.CombatManagement
 
                 //add the move and get a CombatResult
             }
-
-     
         }
-
 
         public Dictionary<string, bool> AnimationSemaphore
         {

@@ -34,14 +34,27 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string randomLoserFighterId = randomBool ? opponentFighterId : thisFighterId;
 
             //winner counterparries (ie, wins)
-            combatResult.CombatAnimationInstructions[randomWinnerFighterId].AnimCommand = AnimationCommands.AC_COUNTERPARRY;
-            combatResult.CombatAnimationInstructions[randomLoserFighterId].AnimCommand = AnimationCommands.AC_PARRY;
+            //combatResult.CombatAnimationInstructions[randomWinnerFighterId].AnimCommand = AnimationCommands.AC_COUNTERPARRY;
+            //combatResult.CombatAnimationInstructions[randomLoserFighterId].AnimCommand = AnimationCommands.AC_PARRY;
+            combatResult.CombatAnimationInstructions.Add(
+                randomWinnerFighterId, 
+                new CombatAnimationInstruction() 
+                    {FighterID = randomWinnerFighterId , AnimCommand = AnimationCommands.AC_COUNTERPARRY}
+                );
+            combatResult.CombatAnimationInstructions.Add(
+                randomLoserFighterId,
+                new CombatAnimationInstruction()
+                { FighterID = randomLoserFighterId, AnimCommand = AnimationCommands.AC_PARRY }
+                );
 
             //loser loses a point
-            combatResult.HPAdjustments[randomLoserFighterId] = -1;
+            //combatResult.HPAdjustments[randomLoserFighterId] = -1;
+            combatResult.HPAdjustments.Add(randomLoserFighterId, -1);
 
-            combatResult.TotalRunningHPs[randomWinnerFighterId] = totalHPs(randomWinnerFighterId);
-            combatResult.TotalRunningHPs[randomLoserFighterId] = totalHPs(randomLoserFighterId) - 1;
+            //combatResult.TotalRunningHPs[randomWinnerFighterId] = totalHPs(randomWinnerFighterId);
+            //combatResult.TotalRunningHPs[randomLoserFighterId] = totalHPs(randomLoserFighterId) - 1;
+            combatResult.TotalRunningHPs.Add(randomWinnerFighterId, totalHPs(randomWinnerFighterId));
+            combatResult.TotalRunningHPs.Add(randomLoserFighterId, totalHPs(randomLoserFighterId));
 
             combatResult.Comments = string.Format("Both knights swing. {0} counterparries and {1} takes damage.", thisFighterId, randomLoserFighterId) ;
 

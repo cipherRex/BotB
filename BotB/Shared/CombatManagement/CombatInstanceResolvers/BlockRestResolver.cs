@@ -48,15 +48,23 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //int previousHeals = numberPreviousSuccessfulHeals(opponentFighterId);
             int previousHeals = falseBlockHistoryResolver.Resolve(opponentFighterId);
 
-            combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
-            combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;
+            //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
+            //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;
+            combatResult.CombatAnimationInstructions.Add(thisFighterId, new CombatAnimationInstruction() 
+            {FighterID = thisFighterId , AnimCommand = AnimationCommands.AC_BLOCK});
+            combatResult.CombatAnimationInstructions.Add(opponentFighterId, new CombatAnimationInstruction()
+            { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_HEAL });
+
 
             //damage is base 2 plus previous consecutive hits
             int totalHealing = 1 + previousHeals;
-            combatResult.HPAdjustments[opponentFighterId] = totalHealing;
+            //combatResult.HPAdjustments[opponentFighterId] = totalHealing;
+            combatResult.HPAdjustments.Add(opponentFighterId, totalHealing);
 
-            combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalHealing;
-            combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+            //combatResult.TotalRunningHPs[opponentFighterId] = totalHPs(opponentFighterId) + totalHealing;
+            //combatResult.TotalRunningHPs[thisFighterId] = totalHPs(thisFighterId);
+            combatResult.TotalRunningHPs.Add(opponentFighterId,  totalHPs(opponentFighterId) + totalHealing);
+            combatResult.TotalRunningHPs.Add(thisFighterId, totalHPs(thisFighterId));
 
             combatResult.Comments = comments;
 
