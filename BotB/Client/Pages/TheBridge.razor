@@ -264,37 +264,13 @@
 
                 if (_combatResult.Victory.VictorFighterId == _fighterId)
                 {
-                            jsFunctionName = thisColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                    jsFunctionName = thisColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
-                            jsFunctionName = otherColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                    
+                    jsFunctionName = otherColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
                 }
-                //else
-                //{
-                //    // I lose
-                //    switch (_role)
-                //    {
-                //        case "White":
-                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-
-                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                //            break;
-
-                //        case "Black":
-                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-
-                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                //            break;
-
-                //    }
-                //}
             }
         }
 

@@ -59,6 +59,7 @@ namespace BotB.Server.Controllers
 
             //flip the semaphore for this fighter, indicating it has reentered idle and;
             //_combatManager.Sessions[sessionId].AnimationSemaphore[fighterId] = true;
+            
             CombatSession thisCombatSession = _combatManager.GetCombatSessionByFighterId(fighterId);
             thisCombatSession.AnimationSemaphore[fighterId] = true;
 
