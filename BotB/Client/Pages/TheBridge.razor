@@ -243,7 +243,7 @@
     void OnHandleAnimationsIdledResult(object sender, CombatRoundResultEventArgs e)
     {
         _idleMessage = "OnHandleAnimationsIdledResult " + DateTime.Now.ToLongTimeString();
-        // string jsFunctionName;
+        string jsFunctionName;
 
         JSRuntime.InvokeVoidAsync("botBFunctions.initCountdown");
 
@@ -252,35 +252,26 @@
 
             if (_combatResult.Victory != null)
             {
-                _idleMessage = "ASD ASD ASD";
-                //StateHasChanged();
 
                 JSRuntime.InvokeVoidAsync("botBFunctions.rotateCamera");
                 JSRuntime.InvokeVoidAsync("botBFunctions.playVictoryCheers");
 
-                //if (_combatResult.Victory.VictorFighterId == this._fighterId)
-                //{
-                //    // I win
-                //    switch (_role)
-                //    {
-                //        case "White":
-                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                string thisFighterId = _fighterId;
+                string opponentFighterId = _combatResult.TotalRunningHPs.Where(x => x.Key != thisFighterId).Select(x => x.Key).FirstOrDefault();
 
-                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                //            break;
+                string thisColor = _role.ToLower();
+                string otherColor = _role == "White" ? "black" : "white";
 
-                //        case "Black":
-                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                if (_combatResult.Victory.VictorFighterId == _fighterId)
+                {
+                            jsFunctionName = thisColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
-                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                //            break;
+                            jsFunctionName = otherColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                    
 
-                //    }
-                //}
+                }
                 //else
                 //{
                 //    // I lose
@@ -317,11 +308,7 @@
 
         Console.WriteLine("OnCombatRoundResult: " + e.MessageContent );
 
-        Console.WriteLine("XXXXXXXXXXXXXXXXXXXXXXX" );
-
         CombatResult combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
-        
-        Console.WriteLine("YYYYYYYYYYYYYYYYYYYYYY");
 
         _combatResult = combatResult;
 
