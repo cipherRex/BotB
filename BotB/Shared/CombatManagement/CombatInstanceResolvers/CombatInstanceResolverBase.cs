@@ -68,12 +68,20 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
             if (combatResult.TotalRunningHPs[thisFighterId] < 1) 
             {
-                combatResult.Victory = new CombatVictory(opponentFighterId, CombatVictoryConditions.VICTORY_KILL);
-                
+                CombatVictory combatVictory = new CombatVictory();
+                combatVictory.Condition = 0;
+                combatVictory.VictorFighterId = opponentFighterId;
+                combatResult.Victory = combatVictory;
+                //combatResult.Victory = new CombatVictory(opponentFighterId, (int)CombatVictoryConditions.VICTORY_KILL);
+
             }
             if (combatResult.TotalRunningHPs[opponentFighterId] < 1)
             {
-                combatResult.Victory = new CombatVictory(thisFighterId, CombatVictoryConditions.VICTORY_KILL);
+                CombatVictory combatVictory = new CombatVictory();
+                combatVictory.Condition = 0;
+                combatVictory.VictorFighterId = thisFighterId;
+                combatResult.Victory = combatVictory;
+                //combatResult.Victory = new CombatVictory(thisFighterId, (int)CombatVictoryConditions.VICTORY_KILL);
             }
 
             return combatResult;

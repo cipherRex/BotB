@@ -39,6 +39,8 @@ namespace BotB.Server.Controllers
 
             if (result != null)
             {
+
+
                 List<string> playerIds = new List<string>();
                 playerIds.Add(thisCombatSession.Fighters.ToArray()[0].Value.ownerId);
                 playerIds.Add(thisCombatSession.Fighters.ToArray()[1].Value.ownerId);

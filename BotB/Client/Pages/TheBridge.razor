@@ -243,7 +243,7 @@
     void OnHandleAnimationsIdledResult(object sender, CombatRoundResultEventArgs e)
     {
         _idleMessage = "OnHandleAnimationsIdledResult " + DateTime.Now.ToLongTimeString();
-        string jsFunctionName;
+        // string jsFunctionName;
 
         JSRuntime.InvokeVoidAsync("botBFunctions.initCountdown");
 
@@ -252,55 +252,58 @@
 
             if (_combatResult.Victory != null)
             {
+                _idleMessage = "ASD ASD ASD";
+                //StateHasChanged();
+
                 JSRuntime.InvokeVoidAsync("botBFunctions.rotateCamera");
                 JSRuntime.InvokeVoidAsync("botBFunctions.playVictoryCheers");
 
-                if (_combatResult.Victory.VictorFighterId == this._fighterId)
-                {
-                    // I win
-                    switch (_role)
-                    {
-                        case "White":
-                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //if (_combatResult.Victory.VictorFighterId == this._fighterId)
+                //{
+                //    // I win
+                //    switch (_role)
+                //    {
+                //        case "White":
+                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
-                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                            break;
+                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //            break;
 
-                        case "Black":
-                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //        case "Black":
+                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
-                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                            break;
+                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //            break;
 
-                    }
-                }
-                else
-                {
-                    // I lose
-                    switch (_role)
-                    {
-                        case "White":
-                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //    }
+                //}
+                //else
+                //{
+                //    // I lose
+                //    switch (_role)
+                //    {
+                //        case "White":
+                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
-                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                            break;
+                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //            break;
 
-                        case "Black":
-                            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //        case "Black":
+                //            jsFunctionName = "white" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
-                            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
-                            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-                            break;
+                //            jsFunctionName = "black" + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                //            JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+                //            break;
 
-                    }
-                }
+                //    }
+                //}
             }
         }
 
@@ -314,28 +317,25 @@
 
         Console.WriteLine("OnCombatRoundResult: " + e.MessageContent );
 
+        Console.WriteLine("XXXXXXXXXXXXXXXXXXXXXXX" );
 
-        string _thisKnightColor = _role;
+        CombatResult combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
+        
+        Console.WriteLine("YYYYYYYYYYYYYYYYYYYYYY");
 
-        _combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
+        _combatResult = combatResult;
 
         string thisFighterId = _fighterId;
-        string opponentFighterId =  _combatResult.TotalRunningHPs.Where(x => x.Key != thisFighterId).Select(x => x.Key).FirstOrDefault();
-
-
-
-        //string otherFighterId = _combatResult.CombatAnimationInstructions.
-        //                                            Where(x => x.Key != _fighterId).FirstOrDefault().
-        //                                            Value.FighterID;
+        string opponentFighterId = combatResult.TotalRunningHPs.Where(x => x.Key != thisFighterId).Select(x => x.Key).FirstOrDefault();
 
         string thisColor = _role.ToLower();
         string otherColor = _role == "White" ? "black" : "white";
 
-        AnimationCommands thisKnightAnimationCommand = _combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand;
-        AnimationCommands otherKnightAnimationCommand = _combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand;
+        AnimationCommands thisKnightAnimationCommand = combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand;
+        AnimationCommands otherKnightAnimationCommand = combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand;
 
-        int thisKnightHpAdj = _combatResult.HPAdjustments.ContainsKey(thisFighterId) ? _combatResult.HPAdjustments[thisFighterId] : 0;
-        int otherKnightHpAdj = _combatResult.HPAdjustments.ContainsKey(opponentFighterId) ? _combatResult.HPAdjustments[opponentFighterId] : 0;
+        int thisKnightHpAdj = combatResult.HPAdjustments.ContainsKey(thisFighterId) ? combatResult.HPAdjustments[thisFighterId] : 0;
+        int otherKnightHpAdj = combatResult.HPAdjustments.ContainsKey(opponentFighterId) ? combatResult.HPAdjustments[opponentFighterId] : 0;
 
         if (thisKnightAnimationCommand != AnimationCommands.AC_BLOCK)
         {
@@ -386,160 +386,20 @@
         if (thisKnightHpAdj != 0)
         {
             JSRuntime.InvokeVoidAsync("botBFunctions." + thisColor +  "SetDmg", thisKnightHpAdj);
-            JSRuntime.InvokeVoidAsync("botBFunctions." + thisColor + "SetHPs", _combatResult.TotalRunningHPs[thisFighterId]);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + thisColor + "SetHPs", combatResult.TotalRunningHPs[thisFighterId]);
         }
 
         if (otherKnightHpAdj != 0)
         {
             JSRuntime.InvokeVoidAsync("botBFunctions." + otherColor + "SetDmg", otherKnightHpAdj);
-            JSRuntime.InvokeVoidAsync("botBFunctions." + otherColor + "SetHPs", _combatResult.TotalRunningHPs[opponentFighterId]);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + otherColor + "SetHPs", combatResult.TotalRunningHPs[opponentFighterId]);
         }
 
-        JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", _combatResult.Comments);
+        JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", combatResult.Comments);
 
+        //_combatResult = combatResult;
 
-
-
-        //_combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
-
-        //Console.WriteLine(e.MessageContent);
-
-        //string otherFighterId = _combatResult.CombatAnimationInstructions.
-        //                                            Where(x => x.Key != _fighterId).FirstOrDefault().
-        //                                            Value.FighterID;
-
-        //AnimationCommands thisKnightAnimationCommand = _combatResult.CombatAnimationInstructions[_fighterId].AnimCommand;
-        //AnimationCommands otherKnightAnimationCommand = _combatResult.CombatAnimationInstructions[otherFighterId].AnimCommand;
-
-        //int thisKnightHpAdj = _combatResult.HPAdjustments.ContainsKey(_playerId) ? _combatResult.HPAdjustments[_playerId] : 0;
-        //int otherKnightHpAdj = _combatResult.HPAdjustments.ContainsKey(_playerId) ? _combatResult.HPAdjustments[otherFighterId] : 0;
-
-        //if (thisKnightAnimationCommand != AnimationCommands.AC_BLOCK)
-        //{
-        //    string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)thisKnightAnimationCommand];
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-        //}
-        //else
-        //{
-        //    string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)thisKnightAnimationCommand];
-
-        //    string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
-
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName, serializedForBlock);
-        //}
-
-        //if (otherKnightAnimationCommand != AnimationCommands.AC_BLOCK)
-        //{
-        //    string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)otherKnightAnimationCommand];
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
-        //}
-        //else
-        //{
-        //    string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)otherKnightAnimationCommand];
-
-        //    string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
-
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName, serializedForBlock);
-        //}
-
-        //if (thisKnightHpAdj > 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "whiteHealEffect", thisKnightHpAdj);
-        //}
-        //else if (thisKnightHpAdj < 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "whiteBleedEffect", thisKnightHpAdj);
-        //}
-
-        //if (otherKnightHpAdj > 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "blackHealEffect", otherKnightHpAdj);
-        //}
-        //else if (otherKnightHpAdj < 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "blackBleedEffect", otherKnightHpAdj);
-        //}
-
-        //if (thisKnightHpAdj != 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "setWhiteDmg", thisKnightHpAdj);
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "setWhiteHPs", _combatResult.TotalRunningHPs[_fighterId]);
-        //}
-
-        //if (otherKnightHpAdj != 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "setBlackDmg", otherKnightHpAdj);
-        //    JSRuntime.InvokeVoidAsync("botBFunctions." + "setBlackHPs", _combatResult.TotalRunningHPs[otherFighterId]);
-        //}
-
-        //JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", _combatResult.Comments);
-
-
-
-
-        //if (combatResult.WhiteAnimationId != AnimationCommand.AC_BLOCK)
-        //{
-        //    string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)combatResult.WhiteAnimationId];
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
-        //}
-        //else
-        //{
-        //    string jsFunctionName = "white" + _javascriptHookFunctionNames[(int)combatResult.WhiteAnimationId];
-
-        //    string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
-
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
-        //}
-
-        //if (combatResult.BlackAnimationId != AnimationCommand.AC_BLOCK)
-        //{
-        //    string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)combatResult.BlackAnimationId];
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName);
-        //}
-        //else
-        //{
-        //    string jsFunctionName = "black" + _javascriptHookFunctionNames[(int)combatResult.BlackAnimationId];
-
-        //    string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
-
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + jsFunctionName, serializedForBlock);
-        //}
-
-        //if (combatResult.WhitePlayerAdjustment > 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteHealEffect", combatResult.WhitePlayerAdjustment);
-        //}
-        //else if (combatResult.WhitePlayerAdjustment < 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "whiteBleedEffect", combatResult.WhitePlayerAdjustment);
-        //}
-
-        //if (combatResult.BlackPlayerAdjustment > 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackHealEffect", combatResult.BlackPlayerAdjustment);
-        //}
-        //else if (combatResult.BlackPlayerAdjustment < 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "blackBleedEffect", combatResult.BlackPlayerAdjustment);
-        //}
-
-        //if (combatResult.WhitePlayerAdjustment != 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteDmg", combatResult.WhitePlayerAdjustment);
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setWhiteHPs", combatResult.WhitePlayerTotalHP);
-        //}
-
-        //if (combatResult.BlackPlayerAdjustment != 0)
-        //{
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackDmg", combatResult.BlackPlayerAdjustment);
-        //    JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setBlackHPs", combatResult.BlackPlayerTotalHP);
-        //}
-
-        //JSRuntime.InvokeVoidAsync("intoTheArenaFunctions." + "setSystemMsg", combatResult.Comments);
-
-
-
-        StateHasChanged();
+        //StateHasChanged();
 
     }
 
