@@ -9,7 +9,7 @@ namespace BotB.Shared.CombatManagement
     public class CombatSession
     {
         public Dictionary<string, Fighter> Fighters;
-        Dictionary<string, bool> _animationSemaphore = new Dictionary<string, bool>();
+        //Dictionary<string, bool> _animationSemaphore = new Dictionary<string, bool>();
         
         public List<CombatRound> CombatRounds { get; set; }
 
@@ -19,7 +19,7 @@ namespace BotB.Shared.CombatManagement
             //List<CombatMove> initialerMoves = new List<CombatMove>();
             //initialerMoves.Add(new CombatMove() { FighterId = fighter1Id, Action = CombatActions.UNASSIGNED });
             //initialerMoves.Add(new CombatMove() { FighterId = fighter2Id, Action = CombatActions.UNASSIGNED });
-
+            AnimationSemaphore = new Dictionary<string, bool>();
             CombatRounds = new List<CombatRound>();
 
             //CombatRound combatRound = new CombatRound(initialerMoves);
@@ -61,10 +61,10 @@ namespace BotB.Shared.CombatManagement
 
         public Dictionary<string, bool> AnimationSemaphore
         {
-            get
-            {
-                return _animationSemaphore;
-            }
+            get; set;
+            //{
+                //return _animationSemaphore;
+            //}
         }
 
 

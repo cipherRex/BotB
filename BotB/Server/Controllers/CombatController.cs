@@ -52,43 +52,24 @@ namespace BotB.Server.Controllers
         [HttpPost("AnimationIdled")]
         public async void AnimationIdled([FromBody] string fighterId)
         {
-
-            string x = "";
-
-
-
-            //flip the semaphore for this fighter, indicating it has reentered idle and;
-            //_combatManager.Sessions[sessionId].AnimationSemaphore[fighterId] = true;
-            
-            CombatSession thisCombatSession = _combatManager.GetCombatSessionByFighterId(fighterId);
-            thisCombatSession.AnimationSemaphore[fighterId] = true;
-
-            //check to see if both fighters are now idled. if so, clear out both semaphores and send out signaR notification
-            if (thisCombatSession.AnimationSemaphore.Where(x => x.Value).Count() == 2)
+            if (_combatManager.setSemaphore(fighterId))
             {
-                List<string> keys = thisCombatSession.AnimationSemaphore.Keys.ToList<string>();
-
-                foreach (string key in keys)
-                {
-                    if (thisCombatSession.AnimationSemaphore[key])
-                    {
-                        thisCombatSession.AnimationSemaphore[key] = false;
-                    }
-                }
+                //CombatSession thisCombatSession = _combatManager.GetCombatSessionByFighterId(fighterId);
+                //List<string> keys = thisCombatSession.AnimationSemaphore.Keys.ToList<string>();
                 
-                List<string> playerIds = new List<string>();
-                //playerIds.Add(_combatManager.Sessions[sessionId].Player1Id);
-                //playerIds.Add(_combatManager.Sessions[sessionId].Player2Id);
+                //List<string> playerIds = new List<string>();
 
-                playerIds.Add(thisCombatSession.Fighters.ToArray()[0].Value.ownerId);
-                playerIds.Add(thisCombatSession.Fighters.ToArray()[1].Value.ownerId);
+                //playerIds.AddRange
+                //    (
+                //        _combatManager.GetCombatSessionByFighterId(fighterId).Fighters.Select(x => x.Value.ownerId)
+                //    );
 
-                await _chatHubContext.SendAnimationsIdled(playerIds, "ok");
+                //await _chatHubContext.SendAnimationsIdled(playerIds, "ok");
+                await _chatHubContext.SendAnimationsIdled(
+                    _combatManager.GetCombatSessionByFighterId(fighterId).Fighters.Select(x => x.Value.ownerId).ToList()
+                    , "ok");
 
             }
         }
-
-
     }
-
 }

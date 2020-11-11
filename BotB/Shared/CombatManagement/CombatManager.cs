@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace BotB.Shared.CombatManagement
 {
@@ -16,21 +17,7 @@ namespace BotB.Shared.CombatManagement
 
         public CombatSession GetCombatSessionByFighterId(string fighterId) 
         {
-
             return CombatSessions.Where(x => x.Fighters.ContainsKey(fighterId)).FirstOrDefault();
-
-            //foreach(CombatSession combatSession in CombatSessions) 
-            //{ 
-            //    if (combatSession.CombatRounds[0].Moves[0].FighterId == fighterId ||
-            //        combatSession.CombatRounds[0].Moves[1].FighterId == fighterId
-            //        )
-            //    {
-            //        //return new CombatSession() {CombatRounds = combatSession.CombatRounds.ToList() };
-            //        return combatSession;
-            //    }
-            //}
-
-            //return null;
         }
 
         public CombatSession CreateCombatSession(Fighter Fighte1, Fighter Fighter2)
@@ -38,6 +25,41 @@ namespace BotB.Shared.CombatManagement
             CombatSession combatSession = new CombatSession(Fighte1, Fighter2);
             CombatSessions.Add(combatSession);
             return combatSession;
+        }
+
+        private readonly Mutex _mutex = new Mutex();
+        public bool setSemaphore(string fighterId)
+        {
+            _mutex.WaitOne();
+            try
+            {
+                CombatSession thisCombatSession = GetCombatSessionByFighterId(fighterId);
+                if (thisCombatSession.AnimationSemaphore.Count == 0) 
+                {
+                    thisCombatSession.AnimationSemaphore.Add(fighterId, true);
+                    return false;
+                }
+                else if (thisCombatSession.AnimationSemaphore.Count == 1) 
+                { 
+                    if (thisCombatSession.AnimationSemaphore.ContainsKey(fighterId)) 
+                    {
+                        throw new Exception("AnimationSemaphore exception");
+                    }
+                    else 
+                    {
+                        thisCombatSession.AnimationSemaphore = new Dictionary<string, bool>();
+                        return true;
+                    }
+                }
+                else 
+                {
+                    throw new Exception("AnimationSemaphore exception");
+                }
+            }
+            finally
+            {
+                _mutex.ReleaseMutex();
+            }
         }
     }
 }
