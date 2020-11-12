@@ -105,21 +105,21 @@
             <div class="@_actionsClass">
 
                 <div>
-                    <button id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.SWING)">
+                    <button disabled="@CannotSwing" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.SWING)">
                         <span for="optSwing">Swing</span>
                     </button>
                 </div>
 
 
                 <div>
-                    <button id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.BLOCK)">
+                    <button disabled="@CannotBlock" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.BLOCK)">
                         <span for="optSwing">Block</span>
                     </button>
                 </div>
 
 
                 <div>
-                    <button id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.REST)">
+                    <button disabled="@CannotRest" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.REST)">
                         <span for="optSwing">Rest</span>
                     </button>
                 </div>
@@ -140,6 +140,12 @@
 
 @code
 {
+
+    private bool _canSwing = true;
+    private bool _canBlock = true;
+    private bool _canRest = false;
+
+
     private string _foo = "x";
 
     [Parameter]
@@ -176,31 +182,109 @@
     }
 
 
+    public bool CannotSwing
+    {
+        get
+        {
+            return !_canSwing;
+        }
+    }
+
+    public bool CannotBlock
+    {
+        get
+        {
+            return true;
+            //return !_canBlock;
+        }
+    }
+
+    public bool CannotRest
+    {
+        get
+        {
+            return !_canRest;
+        }
+    }
+
     private void CoundownComplete()
     {
         Console.WriteLine("CoundownComplete");
 
-        Random rng = new Random();
-        int i = rng.Next(1, 4);
+        //Random rng = new Random();
+        //int i = rng.Next(1, 4);
 
-        switch (i)
+        //switch (i)
+        //{
+        //    case 1:
+        //        _action = CombatActions.SWING;
+        //        break;
+
+        //    case 2:
+        //        _action = CombatActions.BLOCK;
+        //        break;
+
+        //    case 3:
+        //        _action = CombatActions.REST;
+        //        break;
+
+
+        //}
+
+        //  submitMove(_action);
+
+
+
+        Console.WriteLine("CoundownComplete");
+
+        List<CombatActions> availableActions = new List<CombatActions>();
+
+        if (_canSwing)
         {
-            case 1:
-                _action = CombatActions.SWING;
-                break;
-
-            case 2:
-                _action = CombatActions.BLOCK;
-                break;
-
-            case 3:
-                _action = CombatActions.REST;
-                break;
-
-
+            availableActions.Add(CombatActions.SWING);
         }
 
-        submitMove(_action);
+        if (_canBlock)
+        {
+            availableActions.Add(CombatActions.BLOCK);
+        }
+
+        if (_canRest)
+        {
+            availableActions.Add(CombatActions.REST);
+        }
+
+        Random rng = new Random();
+
+        submitMove(availableActions[rng.Next(1, availableActions.Count)]);
+
+        //int i = rng.Next(1, 4);
+        //int i = rng.Next(1, availableActions.Count + 1);
+
+        //CombatActions combaAction= availableActions[i];
+
+        //switch (i)
+        //{
+        //    case 1:
+        //        combaAction = CombatActions.SWING;
+        //        break;
+
+        //    case 2:
+        //        combaAction = CombatActions.BLOCK;
+        //        break;
+
+        //    case 3:
+        //        combaAction = CombatActions.REST;
+        //        break;
+
+
+        //    default:
+        //        throw new Exception("combaAction");
+
+        //}
+
+        //submitMove(combaAction);
+
     }
 
     private void sendAnimationIdleMessage()
@@ -236,6 +320,16 @@
         _fighterId = dynamicInfo.FighterId;
         _playerId = dynamicInfo.PlayerId;
 
+        InitializeChatClientAsync();
+
+        //_chatClient = new ChatClient(_playerId, navigationManager);
+        ////await _chatClient.StartAsync();
+        //_chatClient.StartAsync();
+
+        //_chatClient.CombatRoundResult += OnCombatRoundResult;
+
+        //_chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
+
         onAnimationIdleAction = sendAnimationIdleMessage;
         onCoundownCompleteAction = CoundownComplete;
 
@@ -248,14 +342,16 @@
         {
             Console.WriteLine("OnAfterRenderAsync firstRender");
 
-            _chatClient = new ChatClient(_playerId, navigationManager);
-            await _chatClient.StartAsync();
 
-            _chatClient.CombatRoundResult += OnCombatRoundResult;
+            //_chatClient = new ChatClient(_playerId, navigationManager);
+            ////await _chatClient.StartAsync();
+            //await _chatClient.StartAsync();
 
-            _chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
+            //_chatClient.CombatRoundResult += OnCombatRoundResult;
 
+            //_chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
 
+            //InitializeChatClientAsync();
 
             await JSRuntime.InvokeVoidAsync("botBFunctions.startGame");
         }
@@ -265,7 +361,7 @@
     {
 
         Console.WriteLine("OnInitializedAsync");
-
+        //await InitializeChatClientAsync();
         //_javascriptHookFunctionNames = javascriptHookFunctionNames();
 
         ////﻿{"SessionId":"e0231f99-e3de-422b-b991-4314fcc9ffb2","FighterId":"3a5c704b-07a9-4fcb-81f5-756c9bf6e054","Role":"Black"}
@@ -295,7 +391,7 @@
         _idleMessage = "OnHandleAnimationsIdledResult " + DateTime.Now.ToLongTimeString();
         string jsFunctionName;
 
-   
+
         JSRuntime.InvokeVoidAsync("botBFunctions.initCountdown");
 
         if (_combatResult != null)
@@ -421,11 +517,15 @@
         string comments = combatResult.Comments.Replace(thisFighterId, textInfo.ToTitleCase(thisColor) + " Knight" );
         comments = comments.Replace(opponentFighterId, textInfo.ToTitleCase(otherColor) + " Knight");
         //
-        JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", combatResult.Comments);
+        JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", comments);
+
+        _canSwing =  combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.SWING).Select(x => x.Key).Count() == 0;
+        _canBlock = combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.BLOCK).Select(x => x.Key).Count() == 0;
+        _canRest = combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.REST).Select(x => x.Key).Count() == 0;
 
         //_combatResult = combatResult;
 
-        //StateHasChanged();
+        StateHasChanged();
 
     }
 
@@ -503,5 +603,15 @@
 
     }
 
+    private async void InitializeChatClientAsync()
+    {
+        _chatClient = new ChatClient(_playerId, navigationManager);
+        //await _chatClient.StartAsync();
+        await _chatClient.StartAsync();
+
+        _chatClient.CombatRoundResult += OnCombatRoundResult;
+
+        _chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
+    }
 
 }

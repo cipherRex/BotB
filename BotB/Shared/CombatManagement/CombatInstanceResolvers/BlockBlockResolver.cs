@@ -33,14 +33,15 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             CombatResult combatResult = new CombatResult();
             string comments = "Both knights block.";
 
-            ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
+            //ICombatHistoryResolver successfulBlockHistoryResolver = new SuccessfulBlockHistoryResolver(_combatSession);
+            ICombatHistoryResolver falseBlockHistoryResolver = new FalseBlockHistoryResolver(_combatSession);
 
             //int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId, thisFighterId);
             //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
             //int numTimesThisFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(opponentFighterId);
             //int numTimesOpponentFighterHasBeenBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
-            int numTimesThisFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(thisFighterId);
-            int numTimesOpponentFighterHasBeenBlocked = successfulBlockHistoryResolver.Resolve(opponentFighterId);
+            int numTimesThisFighterHasFalseBlocked = falseBlockHistoryResolver.Resolve(thisFighterId);
+            int numTimesOpponentFighterHasFalseBlocked = falseBlockHistoryResolver.Resolve(opponentFighterId);
 
             //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
             //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
@@ -49,20 +50,20 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.CombatAnimationInstructions.Add(opponentFighterId,
                 new CombatAnimationInstruction() { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_BLOCK });
 
-            if (numTimesThisFighterHasBeenBlocked > 1)
+            if (numTimesThisFighterHasFalseBlocked > 1)
             {
-                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", opponentFighterId);
-                combatResult.ShieldTaunt.Add(opponentFighterId);
+                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", thisFighterId);
+                //combatResult.ShieldTaunt.Add(opponentFighterId);
                 //This Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
                 //So Opponent Fighter cant swing either
                 //combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.SWING));
             }
 
-            if (numTimesOpponentFighterHasBeenBlocked > 1)
+            if (numTimesOpponentFighterHasFalseBlocked > 1)
             {
-                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", thisFighterId);
-                combatResult.ShieldTaunt.Add(thisFighterId);
+                comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", opponentFighterId);
+                //combatResult.ShieldTaunt.Add(thisFighterId);
                 //Opponent Fighter cant block next turn
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.BLOCK));
                 //So This Fighter cant block either

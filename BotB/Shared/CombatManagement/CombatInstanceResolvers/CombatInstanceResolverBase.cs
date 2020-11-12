@@ -38,6 +38,9 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string opponentFighterId = Moves[1].FighterId;
 
             CombatResult combatResult = resolve( Moves);
+            combatResult.MoveRestrictions = new List<KeyValuePair<string, CombatActions>>();
+            combatResult.ShieldRecoil = new List<string>();
+            combatResult.ShieldTaunt = new List<string>();
 
             if (combatResult.HPAdjustments.ContainsKey(thisFighterId) && combatResult.HPAdjustments[thisFighterId] > 0)
             {
@@ -82,6 +85,17 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 combatVictory.VictorFighterId = thisFighterId;
                 combatResult.Victory = combatVictory;
                 //combatResult.Victory = new CombatVictory(thisFighterId, (int)CombatVictoryConditions.VICTORY_KILL);
+            }
+
+
+            if (combatResult.TotalRunningHPs[thisFighterId] < 1)
+            {
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.REST));
+            }
+
+            if (combatResult.TotalRunningHPs[opponentFighterId] < 1)
+            {
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.REST));
             }
 
             return combatResult;
