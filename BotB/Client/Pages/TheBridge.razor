@@ -223,14 +223,8 @@
     {
         Console.WriteLine("OnInitialized");
 
-        onAnimationIdleAction = sendAnimationIdleMessage;
-        onCoundownCompleteAction = CoundownComplete;
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-
-        Console.WriteLine("OnInitializedAsync");
+        //onAnimationIdleAction = sendAnimationIdleMessage;
+        //onCoundownCompleteAction = CoundownComplete;
 
         _javascriptHookFunctionNames = javascriptHookFunctionNames();
 
@@ -242,13 +236,53 @@
         _fighterId = dynamicInfo.FighterId;
         _playerId = dynamicInfo.PlayerId;
 
+        onAnimationIdleAction = sendAnimationIdleMessage;
+        onCoundownCompleteAction = CoundownComplete;
 
-        _chatClient = new ChatClient(_playerId, navigationManager);
-        await _chatClient.StartAsync();
 
-        _chatClient.CombatRoundResult += OnCombatRoundResult;
+    }
 
-        _chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Console.WriteLine("OnAfterRenderAsync firstRender");
+
+            _chatClient = new ChatClient(_playerId, navigationManager);
+            await _chatClient.StartAsync();
+
+            _chatClient.CombatRoundResult += OnCombatRoundResult;
+
+            _chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
+
+
+
+            await JSRuntime.InvokeVoidAsync("botBFunctions.startGame");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Console.WriteLine("OnInitializedAsync");
+
+        //_javascriptHookFunctionNames = javascriptHookFunctionNames();
+
+        ////﻿{"SessionId":"e0231f99-e3de-422b-b991-4314fcc9ffb2","FighterId":"3a5c704b-07a9-4fcb-81f5-756c9bf6e054","Role":"Black"}
+
+        //dynamic dynamicInfo = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(this.Info);
+        //_role = dynamicInfo.Role;
+        ////_sessionId = dynamicInfo.SessionId;
+        //_fighterId = dynamicInfo.FighterId;
+        //_playerId = dynamicInfo.PlayerId;
+
+
+        //_chatClient = new ChatClient(_playerId, navigationManager);
+        //await _chatClient.StartAsync();
+
+        //_chatClient.CombatRoundResult += OnCombatRoundResult;
+
+        //_chatClient.HandleAnimationsIdledResult += OnHandleAnimationsIdledResult;
     }
 
     public string _idleMessage = "i";
@@ -261,6 +295,7 @@
         _idleMessage = "OnHandleAnimationsIdledResult " + DateTime.Now.ToLongTimeString();
         string jsFunctionName;
 
+   
         JSRuntime.InvokeVoidAsync("botBFunctions.initCountdown");
 
         if (_combatResult != null)
@@ -325,7 +360,10 @@
         {
             string jsFunctionName = thisColor + _javascriptHookFunctionNames[(int)thisKnightAnimationCommand];
 
-            string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
+            bool recoil = combatResult.ShieldRecoil.Contains(thisFighterId);
+            bool taunt = combatResult.ShieldTaunt.Contains(thisFighterId);
+
+            string serializedForBlock = buildSerializedBooleanArray(new bool[] { recoil, taunt });
 
             JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName, serializedForBlock);
         }
@@ -339,7 +377,10 @@
         {
             string jsFunctionName = otherColor + _javascriptHookFunctionNames[(int)otherKnightAnimationCommand];
 
-            string serializedForBlock = buildSerializedBooleanArray(new bool[] { true, true });
+            bool recoil = combatResult.ShieldRecoil.Contains(opponentFighterId);
+            bool taunt = combatResult.ShieldTaunt.Contains(opponentFighterId);
+
+            string serializedForBlock = buildSerializedBooleanArray(new bool[] { recoil, taunt });
 
             JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName, serializedForBlock);
         }
@@ -374,6 +415,12 @@
             JSRuntime.InvokeVoidAsync("botBFunctions." + otherColor + "SetHPs", combatResult.TotalRunningHPs[opponentFighterId]);
         }
 
+
+        System.Globalization.TextInfo textInfo = new System.Globalization.CultureInfo("en-US", false).TextInfo;
+
+        string comments = combatResult.Comments.Replace(thisFighterId, textInfo.ToTitleCase(thisColor) + " Knight" );
+        comments = comments.Replace(opponentFighterId, textInfo.ToTitleCase(otherColor) + " Knight");
+        //
         JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", combatResult.Comments);
 
         //_combatResult = combatResult;
@@ -400,20 +447,12 @@
     }
 
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Console.WriteLine("OnAfterRenderAsync firstRender");
 
-            await JSRuntime.InvokeVoidAsync("botBFunctions.startGame");
-        }
-    }
 
     //async void submitMove()
     async void submitMove(CombatActions combatAction)
     {
-        Console.WriteLine("submitMove");
+
 
         //await JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
         JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
@@ -427,6 +466,7 @@
         //combatMove.Action = _action;
         combatMove.Action = combatAction;
         combatMove.FighterId = _fighterId;
+        Console.WriteLine("submitMove: " + System.Text.Json.JsonSerializer.Serialize(combatMove));
 
 
         var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");

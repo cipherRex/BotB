@@ -43,7 +43,8 @@ namespace BotB.Shared.CombatManagement
                 { 
                     if (thisCombatSession.AnimationSemaphore.ContainsKey(fighterId)) 
                     {
-                        throw new Exception("AnimationSemaphore exception");
+                        return false;
+                        // throw new Exception("AnimationSemaphore exception");
                     }
                     else 
                     {
