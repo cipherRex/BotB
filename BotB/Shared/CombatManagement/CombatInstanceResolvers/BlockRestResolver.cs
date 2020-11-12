@@ -49,7 +49,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //get count of how may times Opponent Fighter has previously healed
             //int previousHeals = numberPreviousSuccessfulHeals(opponentFighterId, thisFighterId);
             //int previousHeals = numberPreviousSuccessfulHeals(opponentFighterId);
-            int previousHeals = falseBlockHistoryResolver.Resolve(restingFighterId);
+            SuccessfulHealHistoryResolver successfulHealHistoryResolver = new SuccessfulHealHistoryResolver(_combatSession);
+            int previousHeals = successfulHealHistoryResolver.Resolve(restingFighterId);
 
             //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
             //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_HEAL;

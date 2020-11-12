@@ -19,6 +19,14 @@
 @using BotB.Shared.CombatManagement
 @using System.Linq
 
+@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+
 <style>
     .disabledDiv {
         pointer-events: none;
@@ -97,31 +105,30 @@
             <div class="@_actionsClass">
 
                 <div>
-                    <input type="radio" id="optSwing" name="action" value="Swing" @onclick="@(e => _action = CombatActions.SWING)">
-                    <label for="optSwing">Swing</label>
+                    <button id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.SWING)">
+                        <span for="optSwing">Swing</span>
+                    </button>
                 </div>
+
 
                 <div>
-                    <input type="radio" id="optBlock" name="action" value="Block" @onclick="@(e => _action = CombatActions.BLOCK)">
-                    <label for="optBlock">Block</label>
+                    <button id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.BLOCK)">
+                        <span for="optSwing">Block</span>
+                    </button>
                 </div>
+
 
                 <div>
-                    <input type="radio" id="optRest" name="action" value="Rest" @onclick="@(e => _action = CombatActions.REST)">
-                    <label for="optRest">Rest</label>
+                    <button id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.REST)">
+                        <span for="optSwing">Rest</span>
+                    </button>
                 </div>
 
-                <div>
-                    <button type="button" disabled="@DisallowSubmit" @onclick="submitMove">SUBMIT</button>
 
-                    @*<button type="button" @onclick="submitMove">SUBMIT</button>*@
-                </div>
             </div>
         </div>
 
-        <div>
-            <button onclick="javascript: botBFunctions.fooFunc();">Click me</button>
-        </div>
+
 
 
         <div>
@@ -171,6 +178,8 @@
 
     private void CoundownComplete()
     {
+        Console.WriteLine("CoundownComplete");
+
         Random rng = new Random();
         int i = rng.Next(1, 4);
 
@@ -191,11 +200,12 @@
 
         }
 
-        submitMove();
+        submitMove(_action);
     }
 
     private void sendAnimationIdleMessage()
     {
+        Console.WriteLine("sendAnimationIdleMessage");
         var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
         var response = http.PostAsJsonAsync("Combat/AnimationIdled", _fighterId);
     }
@@ -211,12 +221,16 @@
 
     protected override void OnInitialized()
     {
+        Console.WriteLine("OnInitialized");
+
         onAnimationIdleAction = sendAnimationIdleMessage;
         onCoundownCompleteAction = CoundownComplete;
     }
 
     protected override async Task OnInitializedAsync()
     {
+
+        Console.WriteLine("OnInitializedAsync");
 
         _javascriptHookFunctionNames = javascriptHookFunctionNames();
 
@@ -242,6 +256,8 @@
     //
     void OnHandleAnimationsIdledResult(object sender, CombatRoundResultEventArgs e)
     {
+        Console.WriteLine("OnHandleAnimationsIdledResult");
+
         _idleMessage = "OnHandleAnimationsIdledResult " + DateTime.Now.ToLongTimeString();
         string jsFunctionName;
 
@@ -282,7 +298,7 @@
     void OnCombatRoundResult(object sender, CombatRoundResultEventArgs e)
     {
 
-        Console.WriteLine("OnCombatRoundResult: " + e.MessageContent );
+        Console.WriteLine("OnCombatRoundResult: " + e.MessageContent);
 
         CombatResult combatResult = System.Text.Json.JsonSerializer.Deserialize<CombatResult>(e.MessageContent);
 
@@ -348,7 +364,7 @@
 
         if (thisKnightHpAdj != 0)
         {
-            JSRuntime.InvokeVoidAsync("botBFunctions." + thisColor +  "SetDmg", thisKnightHpAdj);
+            JSRuntime.InvokeVoidAsync("botBFunctions." + thisColor + "SetDmg", thisKnightHpAdj);
             JSRuntime.InvokeVoidAsync("botBFunctions." + thisColor + "SetHPs", combatResult.TotalRunningHPs[thisFighterId]);
         }
 
@@ -388,14 +404,19 @@
     {
         if (firstRender)
         {
+            Console.WriteLine("OnAfterRenderAsync firstRender");
+
             await JSRuntime.InvokeVoidAsync("botBFunctions.startGame");
         }
     }
 
-    async void submitMove()
+    //async void submitMove()
+    async void submitMove(CombatActions combatAction)
     {
+        Console.WriteLine("submitMove");
 
-        await JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
+        //await JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
+        JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
 
         _actionsClass = "disabledDiv";
         StateHasChanged();
@@ -403,12 +424,14 @@
         //CombatMove combatMove = new CombatMove() { SessionId = _sessionId, FighterId = _fighterId, PlayerId = _playerId, Action = _action };
         CombatMove combatMove = new CombatMove();
 
-        combatMove.Action = _action;
+        //combatMove.Action = _action;
+        combatMove.Action = combatAction;
         combatMove.FighterId = _fighterId;
 
 
         var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
-        var response = await http.PostAsJsonAsync("Combat/CombatMove", combatMove);
+        //var response = await http.PostAsJsonAsync("Combat/CombatMove", combatMove);
+        var response = http.PostAsJsonAsync("Combat/CombatMove", combatMove);
     }
 
     private Dictionary<int, string> javascriptHookFunctionNames()
