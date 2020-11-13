@@ -39,7 +39,8 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             //get count of how may times Opponent Fighter has previously been blocked (consecutively)
             //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId, opponentFighterId);
             //int numberPreviousTimesBlocked = numberPreviousSuccessfulBlocks(thisFighterId);
-            int numberPreviousTimesBlocked = successfulBlockHistoryResolver.Resolve(swingingFighterId);
+            //int numberPreviousTimesBlocked = successfulBlockHistoryResolver.Resolve(swingingFighterId);
+            int numberPreviousTimesBlocked = successfulBlockHistoryResolver.Resolve(blockingFighterId);
 
             //combatResult.CombatAnimationInstructions[thisFighterId].AnimCommand = AnimationCommands.AC_SWING;
             //combatResult.CombatAnimationInstructions[opponentFighterId].AnimCommand = AnimationCommands.AC_BLOCK;
@@ -52,7 +53,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             comments = string.Format("{0} blocks.", blockingFighterId);
 
             //If This Player was blocked previously then trigger taunting animation and restrict next move:
-            if (numberPreviousTimesBlocked > 1)
+            if (numberPreviousTimesBlocked >= 1)
             {
                 combatResult.ShieldTaunt.Add(blockingFighterId);
                 //This Player cant swing next turn

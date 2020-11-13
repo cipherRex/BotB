@@ -156,7 +156,7 @@
     private string _fighterId = "";
     private string _playerId = "";
 
-    private CombatActions _action = CombatActions.UNASSIGNED;
+    private CombatActions _action = CombatActions.SWING;
 
     private static Action onAnimationIdleAction;
     private static Action onCoundownCompleteAction;
@@ -194,8 +194,8 @@
     {
         get
         {
-            return true;
-            //return !_canBlock;
+            //return true;
+            return !_canBlock;
         }
     }
 
@@ -209,7 +209,7 @@
 
     private void CoundownComplete()
     {
-        Console.WriteLine("CoundownComplete");
+
 
         //Random rng = new Random();
         //int i = rng.Next(1, 4);
@@ -236,6 +236,9 @@
 
 
         Console.WriteLine("CoundownComplete");
+        Console.WriteLine("_canSwing: " + _canSwing.ToString());
+        Console.WriteLine("_canBlock: " + _canBlock.ToString());
+        Console.WriteLine("_canRest: " + _canRest.ToString());
 
         List<CombatActions> availableActions = new List<CombatActions>();
 
@@ -255,8 +258,15 @@
         }
 
         Random rng = new Random();
+        //int num = rng.Next(1, availableActions.Count + 1);
+        //_idleMessage = "rnd " + num.ToString();
 
-        submitMove(availableActions[rng.Next(1, availableActions.Count)]);
+        int randomIndex = rng.Next(1, availableActions.Count + 1);
+        Console.WriteLine("XXXXXXXXXXXXXXXXXX CoundownComplet: ", randomIndex, System.Text.Json.JsonSerializer.Serialize(availableActions));
+
+        //submitMove(availableActions[rng.Next(1, availableActions.Count + 1)]);
+        //submitMove(CombatActions.SWING);
+        submitMove(availableActions[randomIndex - 1]);
 
         //int i = rng.Next(1, 4);
         //int i = rng.Next(1, availableActions.Count + 1);
@@ -295,13 +305,13 @@
     }
 
 
-    public bool DisallowSubmit
-    {
-        get
-        {
-            return _action == CombatActions.UNASSIGNED;
-        }
-    }
+    //public bool DisallowSubmit
+    //{
+    //    get
+    //    {
+    //        return _action == CombatActions.UNASSIGNED;
+    //    }
+    //}
 
     protected override void OnInitialized()
     {
@@ -400,8 +410,7 @@
             if (_combatResult.Victory != null)
             {
 
-                JSRuntime.InvokeVoidAsync("botBFunctions.rotateCamera");
-                JSRuntime.InvokeVoidAsync("botBFunctions.playVictoryCheers");
+
 
                 string thisFighterId = _fighterId;
                 string opponentFighterId = _combatResult.TotalRunningHPs.Where(x => x.Key != thisFighterId).Select(x => x.Key).FirstOrDefault();
@@ -417,7 +426,27 @@
                     jsFunctionName = otherColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
                     JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
 
+                } else
+                {
+                    jsFunctionName = otherColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_CELEBRATE];
+                    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
+
+                    jsFunctionName = thisColor + _javascriptHookFunctionNames[(int)AnimationCommands.AC_DIE];
+                    JSRuntime.InvokeVoidAsync("botBFunctions." + jsFunctionName);
                 }
+
+                JSRuntime.InvokeVoidAsync("botBFunctions.cancelCountdown");
+
+                VictoryCheer();
+
+                //wait 5 secs
+
+                _canSwing = false;
+                _canBlock = false;
+                _canRest = false;
+
+                StateHasChanged();
+
             }
         }
 
@@ -425,6 +454,13 @@
         StateHasChanged();
     }
 
+    public async void VictoryCheer()
+    {
+        await Task.Delay(7000);
+        JSRuntime.InvokeVoidAsync("botBFunctions.rotateCamera");
+        JSRuntime.InvokeVoidAsync("botBFunctions.playVictoryCheers");
+
+    }
 
     void OnCombatRoundResult(object sender, CombatRoundResultEventArgs e)
     {
@@ -519,9 +555,19 @@
         //
         JSRuntime.InvokeVoidAsync("botBFunctions." + "setSystemMsg", comments);
 
-        _canSwing =  combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.SWING).Select(x => x.Key).Count() == 0;
-        _canBlock = combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.BLOCK).Select(x => x.Key).Count() == 0;
-        _canRest = combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.REST).Select(x => x.Key).Count() == 0;
+
+
+        _canSwing = combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.SWING).Count() == 0;
+        _canBlock = combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.BLOCK).Count() == 0;
+        _canRest = combatResult.MoveRestrictions.Where(x => x.Key == thisFighterId && x.Value == CombatActions.REST).Count() == 0;
+
+        //bool randomBool = new Random().Next(0, 2) > 0;
+        //_canSwing = randomBool;
+        //randomBool = new Random().Next(0, 2) > 0;
+        //_canBlock = randomBool;
+        //randomBool = new Random().Next(0, 2) > 0;
+        //_canRest = randomBool;
+
 
         //_combatResult = combatResult;
 

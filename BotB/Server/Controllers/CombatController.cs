@@ -36,6 +36,7 @@ namespace BotB.Server.Controllers
         {
             CombatSession thisCombatSession = _combatManager.GetCombatSessionByFighterId(Move.FighterId);
             CombatResult result = thisCombatSession.AddMove(Move);
+            //CombatResult result = _combatManager.AddMove(Move);
 
             if (result != null)
             {

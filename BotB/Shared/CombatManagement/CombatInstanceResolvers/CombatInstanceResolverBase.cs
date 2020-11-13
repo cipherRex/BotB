@@ -37,10 +37,14 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             string thisFighterId = Moves[0].FighterId;
             string opponentFighterId = Moves[1].FighterId;
 
+
             CombatResult combatResult = resolve( Moves);
-            combatResult.MoveRestrictions = new List<KeyValuePair<string, CombatActions>>();
-            combatResult.ShieldRecoil = new List<string>();
-            combatResult.ShieldTaunt = new List<string>();
+            if (combatResult.MoveRestrictions == null) combatResult.MoveRestrictions = new List<KeyValuePair<string, CombatActions>>();
+            if (combatResult.ShieldRecoil == null) combatResult.ShieldRecoil = new List<string>();
+            if(combatResult.ShieldTaunt == null) combatResult.ShieldTaunt = new List<string>();
+
+
+            //combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.BLOCK));
 
             if (combatResult.HPAdjustments.ContainsKey(thisFighterId) && combatResult.HPAdjustments[thisFighterId] > 0)
             {
@@ -94,6 +98,17 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             }
 
             if (combatResult.TotalRunningHPs[opponentFighterId] < 1)
+            {
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.REST));
+            }
+
+
+            if (combatResult.TotalRunningHPs[thisFighterId] == MAX_POINTS)
+            {
+                combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(thisFighterId, CombatActions.REST));
+            }
+
+            if (combatResult.TotalRunningHPs[opponentFighterId] == MAX_POINTS)
             {
                 combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.REST));
             }

@@ -27,10 +27,10 @@ namespace BotB.Shared.CombatManagement
             return combatSession;
         }
 
-        private readonly Mutex _mutex = new Mutex();
+        private readonly Mutex _semaphoreMutex = new Mutex();
         public bool setSemaphore(string fighterId)
         {
-            _mutex.WaitOne();
+            _semaphoreMutex.WaitOne();
             try
             {
                 CombatSession thisCombatSession = GetCombatSessionByFighterId(fighterId);
@@ -59,8 +59,23 @@ namespace BotB.Shared.CombatManagement
             }
             finally
             {
-                _mutex.ReleaseMutex();
+                _semaphoreMutex.ReleaseMutex();
             }
         }
+
+        
+        //public CombatResult AddMove(CombatMove Move) 
+        //{
+            
+
+        //    try { 
+        //        CombatSession combatSession = GetCombatSessionByFighterId(Move.FighterId);
+        //        return combatSession.AddMove(Move);
+        //    }
+        //    finally 
+        //    {
+                
+        //    }
+        //}
     }
 }

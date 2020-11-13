@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace BotB.Shared.CombatManagement
 {
@@ -31,31 +32,39 @@ namespace BotB.Shared.CombatManagement
             Fighters[Fighter2.id] = Fighter2;
         }
 
+        private readonly Mutex _moveMutex = new Mutex();
         public CombatResult AddMove(CombatMove NewMove) 
         {
-
-            if (CombatRounds.Count == 0 || CombatRounds[CombatRounds.Count - 1].Moves.Count % 2 == 0) 
+            _moveMutex.WaitOne();
+            try
             {
-                CombatRound newCombatRound = new CombatRound(NewMove);
-                CombatRounds.Add(newCombatRound);
-                return null;
-                //add the move
-            } else 
-            {
+                if (CombatRounds.Count == 0 || CombatRounds[CombatRounds.Count - 1].Moves.Count % 2 == 0)
+                {
+                    CombatRound newCombatRound = new CombatRound(NewMove);
+                    CombatRounds.Add(newCombatRound);
+                    return null;
+                    //add the move
+                }
+                else
+                {
 
-                CombatRound thisRound = CombatRounds[CombatRounds.Count - 1];
+                    CombatRound thisRound = CombatRounds[CombatRounds.Count - 1];
 
-                thisRound.Moves.Add(NewMove);
+                    thisRound.Moves.Add(NewMove);
 
-                CombatResolverFactory combatResolverFactory = new CombatResolverFactory(this);
-                ICombatInstanceResolver combatInstanceResolver =
-                    combatResolverFactory.GetCombatResolver(CombatRounds[CombatRounds.Count - 1].Moves);
+                    CombatResolverFactory combatResolverFactory = new CombatResolverFactory(this);
+                    ICombatInstanceResolver combatInstanceResolver =
+                        combatResolverFactory.GetCombatResolver(CombatRounds[CombatRounds.Count - 1].Moves);
 
-                CombatResult combatResult = combatInstanceResolver.Resolve(CombatRounds[CombatRounds.Count - 1].Moves) ;
-                thisRound.Result = combatResult;
-                return combatResult;
+                    CombatResult combatResult = combatInstanceResolver.Resolve(CombatRounds[CombatRounds.Count - 1].Moves);
+                    thisRound.Result = combatResult;
+                    return combatResult;
 
-                //add the move and get a CombatResult
+                    //add the move and get a CombatResult
+                }
+            }
+            finally { 
+                _moveMutex.ReleaseMutex();
             }
         }
 

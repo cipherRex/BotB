@@ -50,7 +50,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
             combatResult.CombatAnimationInstructions.Add(opponentFighterId,
                 new CombatAnimationInstruction() { FighterID = opponentFighterId, AnimCommand = AnimationCommands.AC_BLOCK });
 
-            if (numTimesThisFighterHasFalseBlocked > 1)
+            if (numTimesThisFighterHasFalseBlocked > 0)
             {
                 comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", thisFighterId);
                 //combatResult.ShieldTaunt.Add(opponentFighterId);
@@ -60,7 +60,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
                 //combatResult.MoveRestrictions.Add(new KeyValuePair<string, CombatActions>(opponentFighterId, CombatActions.SWING));
             }
 
-            if (numTimesOpponentFighterHasFalseBlocked > 1)
+            if (numTimesOpponentFighterHasFalseBlocked > 0)
             {
                 comments = comments + string.Format(" {0} false blocked previoulsy, cannot block next turn. ", opponentFighterId);
                 //combatResult.ShieldTaunt.Add(thisFighterId);
