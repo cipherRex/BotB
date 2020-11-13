@@ -63,17 +63,17 @@ namespace BotB.Server.Controllers
         public int GetPlayerBalance()
         {
             using (IDbConnection dbConnection =
-      DbProviderFactories.GetFactory("system.data.sqlclient").CreateConnection())
+            DbProviderFactories.GetFactory("system.data.sqlclient").CreateConnection())
             {
                 dbConnection.ConnectionString = "Server=tcp:cipherrex.database.windows.net,1433;Initial Catalog=cipherRexUmbraco;Persist Security Info=False;User ID=cipherrex;Password=R00ksp@wnR00ksp@wn;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
                 dbConnection.Open();
                 Models.DAL.SqlDAL sqlDAL = new Models.DAL.SqlDAL(dbConnection);
 
-                Models.UoW.PlayerUoW playerUoW = new PlayerUoW(sqlDAL);
+                Models.Repositories.PlayerRepos.IPlayerRepo playerRepo = new Models.Repositories.PlayerRepos.PlayerRepo(sqlDAL);
 
                 var _userEmail = userEmail().Result;
 
-                return playerUoW.getPlayerBalance(_userEmail);
+                return playerRepo.GetPlayer(_userEmail).Balance;
 
             }
 

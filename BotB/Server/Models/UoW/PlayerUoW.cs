@@ -19,11 +19,11 @@ namespace BotB.Server.Models.UoW
             _iDAL.UpdateBalance(PlayerID, amt);
         }
 
-        public int getPlayerBalance (string PlayerID)
-        {
-            int bal = Convert.ToInt32(_iDAL.GetPlayerBalance(PlayerID).Rows[0].ItemArray[0]);
-            return bal;
-        }
+        //public int getPlayerBalance (string PlayerID)
+        //{
+        //    int bal = Convert.ToInt32(_iDAL.GetPlayerBalance(PlayerID).Rows[0].ItemArray[0]);
+        //    return bal;
+        //}
 
         public string CreateFighter(string fighterName, string OwnerId, string pictureFilename)
         {

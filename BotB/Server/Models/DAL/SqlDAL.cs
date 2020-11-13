@@ -34,12 +34,12 @@ namespace BotB.Server.Models.DAL
             return table;
         }
 
-        public DataTable GetPlayerBalance(string playerId)
+        public DataTable GetPlayerInfo(string playerId)
         {
 
             DataTable table = new DataTable();
   
-            using (var cmd = new SqlCommand("dbo.brawlGetBalance", (SqlConnection)_IDbConnection))
+            using (var cmd = new SqlCommand("dbo.brawlGetPlayer", (SqlConnection)_IDbConnection))
             using (var da = new SqlDataAdapter(cmd))
 
             {
