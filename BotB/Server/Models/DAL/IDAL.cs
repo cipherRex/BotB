@@ -10,7 +10,7 @@ namespace BotB.Server.Models.DAL
     {
         DataTable GetPlayerFighters(string playerId);
         DataTable GetPlayerInfo(string playerId);
-        void DeleteFighter(string fighterId);
+        void DeleteFighterAsync(string fighterId);
         public void UpdateBalance(string playerId, int Amt);
         void InsertFighter(string fighterId, string fighterName, string ownerId, string pictureFilename);
 

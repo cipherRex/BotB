@@ -52,7 +52,7 @@ namespace BotB.Server.Models.DAL
             return table;
         }
 
-        public void DeleteFighter(string fighterId)
+        public async void DeleteFighterAsync(string fighterId)
         {
 
             DataTable table = new DataTable();
@@ -62,7 +62,7 @@ namespace BotB.Server.Models.DAL
                 cmd.Parameters.Add("@FighterID", SqlDbType.VarChar);
                 cmd.Parameters["@FighterID"].Value = fighterId;
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQueryAsync();
             }
 
         }

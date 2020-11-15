@@ -68,7 +68,7 @@ namespace BotB.Server
             services.AddSingleton<BotB.Server.Hubs.Arena>();
             services.AddSingleton<BotB.Server.Hubs.ChatHub>();
 
-            services.AddSingleton<BotB.Shared.CombatManagement.CombatManager>();
+            services.AddSingleton<BotB.Server.Hubs.CombatManager>();
 
             System.Data.Common.DbProviderFactories.RegisterFactory("system.data.sqlclient", typeof(Microsoft.Data.SqlClient.SqlClientFactory));
 

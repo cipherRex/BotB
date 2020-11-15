@@ -6,11 +6,16 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using BotB.Shared;
 using BotB.Shared.CombatManagement;
+using BotB.Server.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-
+using BotB.Server.Models.DAL;
+using System.Data;
+using System.Data.Common;
+using BotB.Server.Models.UoW;
+using BotB.Server.Models.Repositories.PlayerRepos;
 
 namespace BotB.Server.Controllers
 {
@@ -20,10 +25,10 @@ namespace BotB.Server.Controllers
     [Route("[controller]")]
     public class CombatController : ControllerBase
     {
-        private readonly BotB.Shared.CombatManagement.CombatManager _combatManager;
+        private readonly CombatManager _combatManager;
         private readonly Hubs.ChatHub _chatHubContext;
 
-        public CombatController(BotB.Shared.CombatManagement.CombatManager combatManager, Hubs.ChatHub chatHubContext)
+        public CombatController(CombatManager combatManager, Hubs.ChatHub chatHubContext)
         {
             _combatManager = combatManager;
             _chatHubContext = chatHubContext;
@@ -40,12 +45,38 @@ namespace BotB.Server.Controllers
 
             if (result != null)
             {
-
-
                 List<string> playerIds = new List<string>();
                 playerIds.Add(thisCombatSession.Fighters.ToArray()[0].Value.ownerId);
                 playerIds.Add(thisCombatSession.Fighters.ToArray()[1].Value.ownerId);
-                await _chatHubContext.SendCombatResult(playerIds, System.Text.Json.JsonSerializer.Serialize(result));
+                //await _chatHubContext.SendCombatResult(playerIds, System.Text.Json.JsonSerializer.Serialize(result));
+                 _chatHubContext.SendCombatResult(playerIds, System.Text.Json.JsonSerializer.Serialize(result));
+
+                //IDAL dal = new SqlDAL();
+
+                if (result.Victory != null) 
+                {
+                    _combatManager.DeleteSession(playerIds[0]);
+
+                    using (IDbConnection dbConnection =
+                          DbProviderFactories.GetFactory("system.data.sqlclient").CreateConnection())
+                    {
+                        dbConnection.ConnectionString = "Server=tcp:cipherrex.database.windows.net,1433;Initial Catalog=cipherRexUmbraco;Persist Security Info=False;User ID=cipherrex;Password=R00ksp@wnR00ksp@wn;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                        dbConnection.Open();
+                        Models.DAL.SqlDAL sqlDAL = new Models.DAL.SqlDAL(dbConnection);
+
+                        IPlayerRepo playerRepo = new PlayerRepo(sqlDAL);
+                        PlayerUoW playerUoW = new PlayerUoW(sqlDAL, playerRepo);
+
+                        playerUoW.EndGameAsync(
+                            result.Victory.VictorFighterId,
+                            thisCombatSession.Fighters.Where(x => x.Key != result.Victory.VictorFighterId).FirstOrDefault().Key 
+                            );
+
+                    }
+
+                    
+
+                }
             }
         }
 

@@ -52,7 +52,9 @@ namespace BotB.Server.Controllers
                 dbConnection.Open();
                 Models.DAL.SqlDAL sqlDAL = new Models.DAL.SqlDAL(dbConnection);
                 Models.Repositories.Fighter.IFighterRepository fighterRepository = new Models.Repositories.Fighter.FighterRepository(sqlDAL);
-                PlayerUoW uow = new PlayerUoW(sqlDAL);
+                Models.Repositories.PlayerRepos.IPlayerRepo playerRepo = new Models.Repositories.PlayerRepos.PlayerRepo(sqlDAL);
+
+                PlayerUoW uow = new PlayerUoW(sqlDAL, playerRepo);
                 string newFighterId = uow.CreateFighter(fighter.Name, _userEmail, fighter.Picture);
             }
 

@@ -26,6 +26,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Data;
 using System.Data.Common;
+using BotB.Server.Hubs;
+using BotB.Server.Models.Repositories.PlayerRepos;
+using BotB.Server.Models.UoW;
 
 namespace BotB.Server.Controllers
 {
@@ -136,11 +139,26 @@ namespace BotB.Server.Controllers
             Fighter myFighter = _arena.Fighters().Where(x => x.id == myFighterId).First();
 
 
-            //string sessionId = _combatManager.AddCombatSession(new CombatSession(myFighter.ownerId, challengedFighter.ownerId));
-            //_combatManager.CreateCombatSession(myFighter.id, challengedFighter.id);
+            using (IDbConnection dbConnection =
+                  DbProviderFactories.GetFactory("system.data.sqlclient").CreateConnection())
+            {
+                dbConnection.ConnectionString = "Server=tcp:cipherrex.database.windows.net,1433;Initial Catalog=cipherRexUmbraco;Persist Security Info=False;User ID=cipherrex;Password=R00ksp@wnR00ksp@wn;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                dbConnection.Open();
+                Models.DAL.SqlDAL sqlDAL = new Models.DAL.SqlDAL(dbConnection);
+
+                IPlayerRepo playerRepo = new PlayerRepo(sqlDAL);
+                PlayerUoW playerUoW = new PlayerUoW(sqlDAL, playerRepo);
+
+                playerUoW.updatePlayerBalance(myFighter.id, -10);
+                playerUoW.updatePlayerBalance(challengedFighter.id, -10);
+
+
+            }
+
             _combatManager.CreateCombatSession(myFighter, challengedFighter);
 
-            await _chatHubContext.AcceptChallenge(_userEmail, myFighter.ownerId, challengedFighter.ownerId, myFighter.id, challengedFighter.id);
+            //await _chatHubContext.AcceptChallenge(_userEmail, myFighter.ownerId, challengedFighter.ownerId, myFighter.id, challengedFighter.id);
+            _chatHubContext.AcceptChallenge(_userEmail, myFighter.ownerId, challengedFighter.ownerId, myFighter.id, challengedFighter.id);
 
         }
 

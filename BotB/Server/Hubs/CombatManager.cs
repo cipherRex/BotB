@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using BotB.Shared;
 using BotB.Shared.CombatManagement;
 
-namespace BotB.Shared.Hubs
+namespace BotB.Server.Hubs
 {
     public class CombatManager
     {
@@ -40,5 +42,50 @@ namespace BotB.Shared.Hubs
             CombatSessions.Add(combatSession);
             return combatSession;
         }
+
+        public void DeleteSession(string FighterId) 
+        {
+            CombatSessions.Remove
+                (
+                    CombatSessions.Where(x => x.Fighters.Keys.Contains(FighterId)).FirstOrDefault()
+                );
+        }
+
+        private readonly Mutex _semaphoreMutex = new Mutex();
+        public bool setSemaphore(string fighterId)
+        {
+            _semaphoreMutex.WaitOne();
+            try
+            {
+                CombatSession thisCombatSession = GetCombatSessionByFighterId(fighterId);
+                if (thisCombatSession.AnimationSemaphore.Count == 0)
+                {
+                    thisCombatSession.AnimationSemaphore.Add(fighterId, true);
+                    return false;
+                }
+                else if (thisCombatSession.AnimationSemaphore.Count == 1)
+                {
+                    if (thisCombatSession.AnimationSemaphore.ContainsKey(fighterId))
+                    {
+                        return false;
+                        // throw new Exception("AnimationSemaphore exception");
+                    }
+                    else
+                    {
+                        thisCombatSession.AnimationSemaphore = new Dictionary<string, bool>();
+                        return true;
+                    }
+                }
+                else
+                {
+                    throw new Exception("AnimationSemaphore exception");
+                }
+            }
+            finally
+            {
+                _semaphoreMutex.ReleaseMutex();
+            }
+        }
+
     }
 }

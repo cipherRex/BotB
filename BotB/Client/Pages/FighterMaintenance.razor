@@ -74,12 +74,14 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        await JSRuntime.InvokeVoidAsync("botBFunctions.initializeFighterPicturesDropDown", "");
+
+
         if (firstRender)
         {
             getPlayerBalance();
             fillFightersList();
 
-            await JSRuntime.InvokeVoidAsync("botBFunctions.initializeFighterPicturesDropDown", "");
 
 
 
@@ -147,6 +149,8 @@
         getPlayerBalance();
         fillFightersList();
         _newFighter = new Fighter();
+
+        StateHasChanged();
 
     }
 
