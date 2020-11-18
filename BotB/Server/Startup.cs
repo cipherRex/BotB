@@ -112,6 +112,9 @@ namespace BotB.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //new:
+            app.UsePathBase("/BridgeBrawl/");
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
@@ -121,8 +124,8 @@ namespace BotB.Server
             });
 
             //new:
-            app.UsePathBase("/BridgeBrawl/");
-
+            //app.UsePathBase("/BridgeBrawl/");
+            
         }
     }
 }
