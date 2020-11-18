@@ -16,7 +16,7 @@ function onFighterSelected(data)
 
     $("#enterButton").removeClass("hiddenButton");
 }
-
+ 
 function onPictureSelected(data) {
     _selectedPicture = data.selectedData.value;
 }
