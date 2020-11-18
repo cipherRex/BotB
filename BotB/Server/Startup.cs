@@ -119,6 +119,10 @@ namespace BotB.Server
                 endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapFallbackToFile("index.html");
             });
+
+            //new:
+            app.UsePathBase("/BridgeBrawl/");
+
         }
     }
 }
