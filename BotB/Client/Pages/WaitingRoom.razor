@@ -102,7 +102,7 @@
 <button @onclick="@addFighter">click me</button>
 
 <div>
-    global foo: @GLOBAL_FOO
+    Balance: @_balance
 </div>
 
 <div class="flex-container">
@@ -112,9 +112,10 @@
             <select id="playerFighterSelect" />
         </div>
         <br />
-        <div style="width:330px;" class="inner-div">
-            <button id="enterButton" class="hiddenButton" @onclick="@EnterLobby">
-                <img src="/images/DDoor.png">
+        <div class="inner-div">
+            <button id="enterButton" class="hiddenButton" @onclick="@EnterLobby" >
+                @*<img src="/images/DDoor.png">*@
+                <i class="fas fa-dungeon fa-lg" ></i>
             </button>
         </div>
         <br />
@@ -222,6 +223,7 @@
     List<string> _challengerIDs = new List<string>();   //fighters that have challenged me
     List<string> _challengeeIDs = new List<string>();   //fighters that i have challenged
 
+    int _balance = 0;
 
     public void addFighter()
     {
@@ -247,7 +249,7 @@
         if (firstRender)
         {
             var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
-
+             getPlayerBalance();
             _playerFighters = await http.GetFromJsonAsync<Fighter[]>("Lobby/PlayerFighters");
 
             var playerFighterList = new List<dynamic>();
@@ -461,6 +463,17 @@
             //    Console.WriteLine(e.Message);
             //   Console.WriteLine(e.StackTrace);
         }
+    }
+
+    private async void getPlayerBalance()
+    {
+        //_balance = 150;
+        //return;
+
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+        _balance = await http.GetFromJsonAsync<int>("FighterMaintenance/GetPlayerBalance");
+        //_balance = balance;
+        StateHasChanged();
     }
 
     public void Dispose()
