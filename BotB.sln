@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotB.Server", "BotB\Server\BotB.Server.csproj", "{93E6F057-840D-4A47-B09D-0DFA7C57B3E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotB.Server", "BotB\Server\BotB.Server.csproj", "{93E6F057-840D-4A47-B09D-0DFA7C57B3E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotB.Client", "BotB\Client\BotB.Client.csproj", "{8920BAC4-4D54-4F05-9A5E-6D6F07438F9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotB.Client", "BotB\Client\BotB.Client.csproj", "{8920BAC4-4D54-4F05-9A5E-6D6F07438F9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotB.Shared", "BotB\Shared\BotB.Shared.csproj", "{DCFF7B5C-9039-4921-908A-83669BFD7B16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotB.Shared", "BotB\Shared\BotB.Shared.csproj", "{DCFF7B5C-9039-4921-908A-83669BFD7B16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

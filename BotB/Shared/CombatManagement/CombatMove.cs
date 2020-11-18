@@ -7,6 +7,6 @@ namespace BotB.Shared.CombatManagement
     public class CombatMove
     {
         public string FighterId { get; set; }
-        public CombatEnums Action { get; set; }
+        public CombatActions Action { get; set; }
     }
 }
