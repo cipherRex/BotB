@@ -113,7 +113,7 @@ namespace BotB.Server
             app.UseAuthorization();
 
             //new:
-            //app.UsePathBase("/BridgeBrawl");
+            app.UsePathBase("/BridgeBrawl");
 
             app.UseEndpoints(endpoints =>
             {
