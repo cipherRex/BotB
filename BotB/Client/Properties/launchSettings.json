@@ -1,4 +1,14 @@
 {
+  "Watch": {
+    "executablePath": "C:\\Program Files\\dotnet\\dotnet.exe",
+    "commandLineArgs": "watch --project ..\\..\\..\\<PROJECT NAME>.csproj run",
+    "launchBrowser": true,
+    "launchUrl": "https://localhost:5001",
+    "environmentVariables": {
+      "ASPNETCORE_ENVIRONMENT": "Development"
+    }
+  },
+
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
