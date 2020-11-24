@@ -125,7 +125,7 @@ namespace BotB.Server
 
             //new:
             //app.UsePathBase("/BridgeBrawl/");
-            
+             
         }
     }
 }
