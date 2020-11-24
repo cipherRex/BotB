@@ -165,7 +165,9 @@
                                             //else if (fighter.id != _currentlySelectedFighterId)
                                             else if (fighter.id != _viewModel.MyFighter.id)
                                             {
-                                                <button type="button" disabled="@NoChallengeAllowed" class="btn btn-success btn-sm" @onclick="@(async () => await Challenge(fighter.id))">Challenge  </button>
+                                                <button type="button" disabled="@NoChallengeAllowed"  @onclick="@(async () => await Challenge(fighter.id))">
+                                                    <i class="ra-2x ra ra-sword"></i>                                               
+                                                </button>
                                             }
 
                                             else
