@@ -107,23 +107,37 @@
 
 <div class="flex-container">
 
-    <div class="outer-div" style="max-width:600px">
-        <div style="width: 330px" class="inner-div">
-            <select id="playerFighterSelect" />
-        </div>
-        <br />
-        <div class="inner-div">
-            <button id="enterButton" class="hiddenButton" @onclick="@EnterLobby" >
-                @*<img src="/images/DDoor.png">*@
-                <i class="fas fa-dungeon fa-lg" ></i>
-            </button>
-        </div>
-        <br />
-        <div style="width:330px;" class="inner-div">
-            @*<button id="enterButton" @onclick="@ExitLobby">
-                    LEAVE LOBBY
-                </button>*@
-        </div>
+    @*<div class="outer-div" style="max-width:600px">
+            <div style="width: 330px" class="inner-div">
+                <select id="playerFighterSelect" />
+            </div>
+            <br />
+            <div class="inner-div">
+                <button id="enterButton" class="hiddenButton" @onclick="@EnterLobby" >
+
+                    <i class="fas fa-dungeon fa-lg" ></i>
+                </button>
+            </div>
+            <br />
+            <div style="width:330px;" class="inner-div">
+
+            </div>
+        </div>*@
+    <div>
+        <EditForm Model="@_viewModel" OnValidSubmit="@EnterLobby">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <CustomInputText @bind-Value=_viewModel.MyFighter.Name></CustomInputText>
+
+            <div style="width: 330px" class="inner-div">
+                <select id="pictureSelect" />
+            </div>
+
+            <button type="submit" disabled=@InvalidForm>Submit</button>
+        </EditForm>
+
+
     </div>
 
     <div class="outer-div" style="max-width:600px">
@@ -165,7 +179,8 @@
                                                 </span>
                                             }
 
-                                            else if (fighter.id != _currentlySelectedFighterId)
+                                            //else if (fighter.id != _currentlySelectedFighterId)
+                                            else if (fighter.id != _viewModel.MyFighter.id)
                                             {
                                                 <button class="btn btn-success btn-sm" @onclick="@(async () => await Challenge(fighter.id))">Challenge  </button>
                                             }
@@ -208,9 +223,36 @@
 
 @code {
 
+    protected class WaitingRoomViewModel
+    {
+        public Fighter MyFighter { get; set; }
+
+
+        public WaitingRoomViewModel()
+        {
+            MyFighter = new Fighter();
+            MyFighter.ownerId = Guid.NewGuid().ToString();
+
+            MyFighter.id = Guid.NewGuid().ToString();
+            MyFighter.Picture = "k1.png";
+
+        }
+    }
+
+    public bool InvalidForm
+    {
+        get
+        {
+            return string.IsNullOrEmpty(_viewModel.MyFighter.Name);
+                
+        }
+    }
+
+    protected WaitingRoomViewModel _viewModel = new WaitingRoomViewModel();
+
     public string GLOBAL_FOO = "FOO";
 
-    public string _currentlySelectedFighterId = "";
+    //public string _currentlySelectedFighterId = "";
     private List<Fighter> _contestants = new List<Fighter>();
     private Fighter[] _playerFighters;
     string message = null;
@@ -218,7 +260,7 @@
 
     ChatClient _chatClient = null;
 
-    string _chatClientId;
+    //string _chatClientId;
 
     List<string> _challengerIDs = new List<string>();   //fighters that have challenged me
     List<string> _challengeeIDs = new List<string>();   //fighters that i have challenged
@@ -237,19 +279,19 @@
         StateHasChanged();
     }
 
-    public async Task GetCurrentFighterIdFromDOM()
-    {
-        var currentlySelectedFighterId = await JSRuntime.InvokeAsync<string>(
-        "botBFunctions.getSelectedFighterId");
-        _currentlySelectedFighterId = currentlySelectedFighterId;
-    }
+    //public async Task GetCurrentFighterIdFromDOM()
+    //{
+    //    var currentlySelectedFighterId = await JSRuntime.InvokeAsync<string>(
+    //    "botBFunctions.getSelectedFighterId");
+    //    _currentlySelectedFighterId = currentlySelectedFighterId;
+    //}
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
-             getPlayerBalance();
+            getPlayerBalance();
             _playerFighters = await http.GetFromJsonAsync<Fighter[]>("Lobby/PlayerFighters");
 
             var playerFighterList = new List<dynamic>();
@@ -283,8 +325,8 @@
 
             _contestants = await http.GetFromJsonAsync<List<Fighter>>("Lobby/Combatants");
 
-            _chatClientId = Guid.NewGuid().ToString();
-            _chatClient = new ChatClient(_chatClientId, navigationManager);
+            //_chatClientId = Guid.NewGuid().ToString();
+            _chatClient = new ChatClient(_viewModel.MyFighter.ownerId, navigationManager);
             _chatClient.MessageReceived += MessageReceived;
             _chatClient.LobbyExited += LobbyExited;
             _chatClient.Challenged += Challenged;
@@ -362,14 +404,14 @@
         try
         {
 
-            await GetCurrentFighterIdFromDOM();
+            //await GetCurrentFighterIdFromDOM();
 
-            Fighter selectedFighter = _playerFighters.Where(x => x.id == _currentlySelectedFighterId).First();
-            selectedFighter.ownerId = _chatClientId;
+            //Fighter selectedFighter = _playerFighters.Where(x => x.id == _currentlySelectedFighterId).First();
+            //selectedFighter.ownerId = _chatClientId;
 
 
             var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
-            var response = await http.PostAsJsonAsync("Lobby/EnterLobby", System.Text.Json.JsonSerializer.Serialize(selectedFighter));
+            var response = await http.PostAsJsonAsync("Lobby/EnterLobby", System.Text.Json.JsonSerializer.Serialize(_viewModel.MyFighter));
 
         }
         catch (Exception e)
@@ -385,13 +427,13 @@
         try
         {
 
-            await GetCurrentFighterIdFromDOM();
+            //await GetCurrentFighterIdFromDOM();
 
-            Fighter selectedFighter = _playerFighters.Where(x => x.id == _currentlySelectedFighterId).First();
+            //Fighter selectedFighter = _playerFighters.Where(x => x.id == _currentlySelectedFighterId).First();
 
 
             var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
-            var response = await http.PostAsJsonAsync("Lobby/ExitLobby", System.Text.Json.JsonSerializer.Serialize(selectedFighter));
+            var response = await http.PostAsJsonAsync("Lobby/ExitLobby", System.Text.Json.JsonSerializer.Serialize(_viewModel.MyFighter));
 
         }
 
@@ -414,7 +456,8 @@
             ExpandoObject expandoObject = JsonConvert.DeserializeObject<ExpandoObject>(serializedFighter, new ExpandoObjectConverter());
 
             var ChallengerFighterId = "ChallengerFighterId";
-            ((IDictionary<string, object>)expandoObject)[ChallengerFighterId] = _currentlySelectedFighterId;
+            //((IDictionary<string, object>)expandoObject)[ChallengerFighterId] = _currentlySelectedFighterId;
+            ((IDictionary<string, object>)expandoObject)[ChallengerFighterId] = _viewModel.MyFighter.id;
 
 
             serializedFighter = System.Text.Json.JsonSerializer.Serialize(expandoObject);
@@ -445,8 +488,9 @@
             ExpandoObject expandoObject = JsonConvert.DeserializeObject<ExpandoObject>(serializedFighter, new ExpandoObjectConverter());
 
             var challengingFighterId = "ChallengerFighterId";
-            ((IDictionary<string, object>)expandoObject)[challengingFighterId] = _currentlySelectedFighterId;
-            ((IDictionary<string, object>)expandoObject)["PlayerId"] = _chatClientId;
+            //((IDictionary<string, object>)expandoObject)[challengingFighterId] = _currentlySelectedFighterId;
+            ((IDictionary<string, object>)expandoObject)[challengingFighterId] = _viewModel.MyFighter.id;
+            ((IDictionary<string, object>)expandoObject)["PlayerId"] = _viewModel.MyFighter.ownerId;
 
             serializedFighter = System.Text.Json.JsonSerializer.Serialize(expandoObject);
 
