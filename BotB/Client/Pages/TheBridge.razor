@@ -69,6 +69,23 @@
         height: 30px;
         background-color: green;
     }
+
+    .combatButton {
+        padding: 10px;
+        border: 2px solid #dadada;
+        border-radius: 7px;
+    }
+
+    .combatButtonContainer {
+        padding: 10px;
+    }
+
+    .combatButton:hover:enabled {
+        outline: none;
+        border-color: gold;
+        box-shadow: 0 0 10px gold;
+    }
+
 </style>
 
 
@@ -104,27 +121,36 @@
 
             <div class="@_actionsClass">
 
-                <div>
-                    <button disabled="@CannotSwing" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.SWING)">
-                        <span for="optSwing">Swing</span>
+                <div style="float:left" class="combatButtonContainer">
+                    <button class="combatButton" style="background-color:red" disabled="@CannotSwing" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.SWING)">
+                        <span for="optSwing">
+                            @*Swing*@
+                            <i class="lobbyIcon ra-3x ra ra-sword"></i>
+                        </span>
                     </button>
                 </div>
 
 
-                <div>
-                    <button disabled="@CannotBlock" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.BLOCK)">
-                        <span for="optSwing">Block</span>
+                <div style="float:left" class="combatButtonContainer">
+                    <button class="combatButton" style="background-color:orange" disabled="@CannotBlock" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.BLOCK)">
+                        <span for="optSwing">
+                            @*Block*@
+                            <i class="lobbyIcon ra-3x ra ra-shield"></i>
+                        </span>
                     </button>
                 </div>
 
 
-                <div>
-                    <button disabled="@CannotRest" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.REST)">
-                        <span for="optSwing">Rest</span>
+                <div style="float:left" class="combatButtonContainer">
+                    <button class="combatButton" style="background-color:green" disabled="@CannotRest" id="btnSwing" name="btnSwing" value="Swing" @onclick="e => this.submitMove(CombatActions.REST)">
+                        <span for="optSwing">
+                            @*Rest*@
+                            <i class="lobbyIcon ra-3x ra ra-health-increase"></i>
+                        </span>
                     </button>
                 </div>
 
-
+                <br style="clear: left;" />
             </div>
         </div>
 

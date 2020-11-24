@@ -67,7 +67,7 @@ namespace BotB.Server.Controllers
                         IPlayerRepo playerRepo = new PlayerRepo(sqlDAL);
                         PlayerUoW playerUoW = new PlayerUoW(sqlDAL, playerRepo);
 
-                        playerUoW.EndGameAsync(
+                        playerUoW.EndGame(
                             result.Victory.VictorFighterId,
                             thisCombatSession.Fighters.Where(x => x.Key != result.Victory.VictorFighterId).FirstOrDefault().Key 
                             );
