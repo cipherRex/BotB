@@ -99,48 +99,31 @@
     }
 </style>
 
-<button @onclick="@addFighter">click me</button>
-
-<div>
-    Balance: @_balance
-</div>
 
 <div class="flex-container">
 
-    @*<div class="outer-div" style="max-width:600px">
-            <div style="width: 330px" class="inner-div">
-                <select id="playerFighterSelect" />
-            </div>
-            <br />
-            <div class="inner-div">
-                <button id="enterButton" class="hiddenButton" @onclick="@EnterLobby" >
 
-                    <i class="fas fa-dungeon fa-lg" ></i>
-                </button>
-            </div>
-            <br />
-            <div style="width:330px;" class="inner-div">
-
-            </div>
-        </div>*@
-    <div>
-        <EditForm Model="@_viewModel" OnValidSubmit="@EnterLobby">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <CustomInputText @bind-Value=_viewModel.MyFighter.Name></CustomInputText>
-
-            <div style="width: 330px" class="inner-div">
-                <select id="pictureSelect" />
-            </div>
-
-            <button type="submit" disabled=@InvalidForm>Submit</button>
-        </EditForm>
+    @*<select id="playerFighterSelect" />*@
 
 
-    </div>
+
 
     <div class="outer-div" style="max-width:600px">
+
+        <div class="inner-div">
+            <EditForm Model="@_viewModel" OnValidSubmit="@EnterLobby">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <CustomInputText @bind-Value=_viewModel.MyFighter.Name></CustomInputText>
+
+
+                <button type="submit" disabled=@CannotEnterLobby>
+                    <i class="fas fa-dungeon fa-lg"></i>
+                </button>
+            </EditForm>
+        </div>
+
         <div style="min-width: 330px" class="inner-div">
 
             <table style="width:100%;padding:0;border: none;" cellspacing="0" cellpadding="0">
@@ -182,7 +165,7 @@
                                             //else if (fighter.id != _currentlySelectedFighterId)
                                             else if (fighter.id != _viewModel.MyFighter.id)
                                             {
-                                                <button class="btn btn-success btn-sm" @onclick="@(async () => await Challenge(fighter.id))">Challenge  </button>
+                                                <button type="button" disabled="@NoChallengeAllowed" class="btn btn-success btn-sm" @onclick="@(async () => await Challenge(fighter.id))">Challenge  </button>
                                             }
 
                                             else
@@ -244,7 +227,32 @@
         get
         {
             return string.IsNullOrEmpty(_viewModel.MyFighter.Name);
-                
+
+        }
+    }
+
+    public bool LobbyEntered
+    {
+        get
+        {
+            return _contestants.Where(x => x.id == _viewModel.MyFighter.id).Count() > 0;
+
+        }
+    }
+
+    public bool NoChallengeAllowed
+    {
+        get
+        {
+            return !LobbyEntered;
+        }
+    }
+
+    public bool CannotEnterLobby
+    {
+        get
+        {
+            return LobbyEntered || InvalidForm;
         }
     }
 
