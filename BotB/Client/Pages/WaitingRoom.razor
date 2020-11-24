@@ -19,7 +19,7 @@
 @using Newtonsoft.Json.Converters
 @inject NavigationManager NavigationManager
 
-<style type="text/css">
+    <style type="text/css">
         .dd-selected, .dd-option, .dd-option-selected {
         height: 100px !important;
         max-height: 100px !important;
@@ -97,7 +97,46 @@
     .displayedButton {
         display: block;
     }
-</style>
+
+        @@keyframes challengeKeyFrame {
+            from {
+                background-color: transparent;
+            }
+
+            to {
+                background-color: red;
+            }
+        }
+
+        .challengeIcon {
+            transition: 200ms ease-in-out;
+            background-color: red;
+            animation-name: challengeKeyFrame;
+            animation-duration: 2s;
+        }
+
+        @@keyframes leaveLobbyKeyFrame {
+            from {
+                background-color: transparent;
+            }
+
+            to {
+                background-color: green;
+            }
+        }
+
+        .leaveLobbyIcon {
+            transition: 200ms ease-in-out;
+            background-color: green;
+            animation-name: leaveLobbyKeyFrame;
+            animation-duration: 2s;
+        }
+
+        .actionButton
+        {
+            padding:5px;
+        }
+    </style>
 
 
 <div class="flex-container">
@@ -152,28 +191,32 @@
                                             @*<button class="btn btn-danger btn-sm" @onclick="@Challenge">Challenge</button>*@
                                             @if (_challengerIDs.Contains(fighter.id))
                                             {
-                                                <button class="btn btn-danger btn-sm" @onclick="@(async () => await AcceptChallenge(fighter.id))">Accept Challenge  </button>
+                                            <button class="actionButton challengeIcon" @onclick="@(async () => await AcceptChallenge(fighter.id))">
+                                                <span>
+                                                    <i class="ra-2x ra ra-crossed-swords"></i>
+                                                </span>
+                                            </button>
                                             }
 
                                             else if (_challengeeIDs.Contains(fighter.id))
                                             {
                                                 <span>
-                                                    Already Challenged
+                                                    <i class="lobbyIcon ra-2x ra ra-sword"></i>
                                                 </span>
                                             }
 
                                             //else if (fighter.id != _currentlySelectedFighterId)
                                             else if (fighter.id != _viewModel.MyFighter.id)
                                             {
-                                                <button type="button" disabled="@NoChallengeAllowed"  @onclick="@(async () => await Challenge(fighter.id))">
-                                                    <i class="ra-2x ra ra-sword"></i>                                               
+                                                <button class="actionButton challengeIcon" type="button" disabled="@NoChallengeAllowed"  @onclick="@(async () => await Challenge(fighter.id))">
+                                                    <i class=" ra-2x ra ra-sword"></i>                                               
                                                 </button>
                                             }
 
                                             else
                                             {
-                                                <button id="enterButton" @onclick="@ExitLobby">
-                                                    LEAVE LOBBY
+                                                <button class="actionButton leaveLobbyIcon" id="enterButton" @onclick="@ExitLobby">
+                                                    <i class="lobbyIcon fas fa-2x fa-sign-out-alt"></i>
                                                 </button>
                                             }
 
