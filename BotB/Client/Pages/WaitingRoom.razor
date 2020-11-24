@@ -1,0 +1,633 @@
+﻿@page "/waitingRoom"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using BotB.Shared
+
+@*@using System.Net.Http*@
+@inject HttpClient Http
+@*@inject Arena _arena*@
+@implements IDisposable
+@inject IHttpClientFactory HttpClientFactory
+@inject IJSRuntime JSRuntime
+@using BotB.Client.Data
+@inject NavigationManager navigationManager
+@using System.Text.Json.Serialization;
+@using Microsoft.AspNetCore.Components.Web
+@using System.Dynamic
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using Newtonsoft.Json.Converters
+@inject NavigationManager NavigationManager
+
+    <style type="text/css">
+        .dd-selected, .dd-option, .dd-option-selected {
+        height: 100px !important;
+        max-height: 100px !important;
+        vertical-align: central;
+        font-size: large;
+        background-color: burlywood;
+    }
+
+/*    .dd-option-image {
+        border: thick ridge brown;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        position: absolute;
+        top: 10%;
+        left: 60%;
+        width: 17%;
+        height: 80%;
+    }*/
+        .dd-option-image {
+        border: thick ridge brown;
+    }
+
+
+        .dd-selected-image {
+        border: thick ridge brown;
+    }
+
+    .dd-selected-text {
+        line-height: 0;
+    }
+
+    .dd-selected, .dd-option-selected {
+        border: thin solid black;
+    }
+
+    .dd-option:hover {
+        background: AntiqueWhite;
+        color: #000;
+    }
+
+    .dd-container {
+        padding: 20px;
+        border: none;
+    }
+
+    .container img {
+        width: 100%;
+        padding-top: 0;
+    }
+
+    .flex-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .outer-div {
+        width: 100%;
+        text-align: center;
+    }
+
+    .inner-div {
+        display: inline-block;
+        margin: 0 auto;
+        padding: 3px;
+    }
+
+    .top-row {
+        z-index: 999;
+    }
+
+    .hiddenButton {
+        display: none;
+    }
+
+    .displayedButton {
+        display: block;
+    }
+
+    @@keyframes challengeKeyFrame 
+    {
+        from {
+            background-color: transparent;
+        }
+
+        to {
+            background-color: red;
+        }
+    }
+
+    .challengeIcon 
+    {
+        transition: 200ms ease-in-out;
+        background-color: red;
+        animation-name: challengeKeyFrame;
+        animation-duration: 2s;
+    }
+
+    @@keyframes leaveLobbyKeyFrame {
+        from 
+        {
+            background-color: transparent;
+        }
+
+        to 
+        {
+            background-color: green;
+        }
+    }
+
+    .leaveLobbyIcon {
+        transition: 200ms ease-in-out;
+        background-color: green;
+        animation-name: leaveLobbyKeyFrame;
+        animation-duration: 2s;
+    }
+
+    .actionButton
+    {
+        padding:5px;
+    }
+
+    .glowing-border {
+        border: 2px solid #dadada;
+        border-radius: 7px;
+    }
+
+    .glowing-border:hover:enabled {
+        outline: none;
+        border-color: gold;
+        box-shadow: 0 0 10px gold;
+    }
+    </style>
+
+
+<div class="flex-container">
+
+
+    @*<select id="playerFighterSelect" />*@
+
+
+
+
+    <div class="outer-div" style="max-width:600px">
+
+        <div class="inner-div">
+            <EditForm Model="@_viewModel" OnValidSubmit="@EnterLobby">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <CustomInputText @bind-Value=_viewModel.MyFighter.Name></CustomInputText>
+
+
+                <button type="submit" disabled=@CannotEnterLobby>
+                    <i class="fas fa-dungeon fa-lg"></i>
+                </button>
+            </EditForm>
+        </div>
+
+        <div style="min-width: 330px" class="inner-div">
+
+            <table style="width:100%;padding:0;border: none;" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <div class="container">
+                            <img src="/images/scrollTop.png" />
+                        </div>
+                    </td>
+                </tr>
+
+                @if (_contestants != null)
+                {
+                    @foreach (var fighter in _contestants)
+                    {
+                        <tr>
+
+                            <td>
+
+                                <div class="container" style="position: relative;padding-top:0;">
+                                    <img src="/images/scrollMiddle.png" />
+                                    <div style="position: absolute; top:15%; left: 25%;width:20%;height:80%">
+                                        <h4><span style="font-weight:bold;">@fighter.Name</span></h4>
+
+                                        <div style="position: absolute; top:45%; left: 5%;width:20%;height:80%">
+                                            @*<button class="btn btn-danger btn-sm" @onclick="@Challenge">Challenge</button>*@
+                                            @if (_challengerIDs.Contains(fighter.id))
+                                            {
+                                            <button class="glowing-border actionButton challengeIcon" @onclick="@(async () => await AcceptChallenge(fighter.id))">
+                                                <span>
+                                                    <i class="ra-2x ra ra-crossed-swords"></i>
+                                                </span>
+                                            </button>
+                                            }
+
+                                            else if (_challengeeIDs.Contains(fighter.id))
+                                            {
+                                                <span>
+                                                    <i class="lobbyIcon ra-2x ra ra-sword"></i>
+                                                </span>
+                                            }
+
+                                            //else if (fighter.id != _currentlySelectedFighterId)
+                                            else if (fighter.id != _viewModel.MyFighter.id)
+                                            {
+                                                <button class="glowing-border actionButton challengeIcon" type="button" disabled="@NoChallengeAllowed"  @onclick="@(async () => await Challenge(fighter.id))">
+                                                    <i class=" ra-2x ra ra-sword"></i>                                               
+                                                </button>
+                                            }
+
+                                            else
+                                            {
+                                                <button class="glowing-border actionButton leaveLobbyIcon" id="enterButton" @onclick="@ExitLobby">
+                                                    <i class="lobbyIcon fas fa-2x fa-sign-out-alt"></i>
+                                                </button>
+                                            }
+
+                                        </div>
+                                    </div>
+
+                                    <div class="container" style="background-size:100% 100%;background-repeat: no-repeat; position: absolute; top: 10%; left: 60%; width: 17%; height: 80%; border: thick ridge brown; background-image: url(/images/@fighter.Picture); ">
+
+                                    </div>
+
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+
+                <tr>
+                    <td>
+                        <div class="container">
+                            <img src="/images/scrollBottom.png" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    protected class WaitingRoomViewModel
+    {
+        public Fighter MyFighter { get; set; }
+
+
+        public WaitingRoomViewModel()
+        {
+            MyFighter = new Fighter();
+            MyFighter.ownerId = Guid.NewGuid().ToString();
+
+            MyFighter.id = Guid.NewGuid().ToString();
+            MyFighter.Picture = "k1.png";
+
+        }
+    }
+
+    public bool InvalidForm
+    {
+        get
+        {
+            return string.IsNullOrEmpty(_viewModel.MyFighter.Name);
+
+        }
+    }
+
+    public bool LobbyEntered
+    {
+        get
+        {
+            return _contestants.Where(x => x.id == _viewModel.MyFighter.id).Count() > 0;
+
+        }
+    }
+
+    public bool NoChallengeAllowed
+    {
+        get
+        {
+            return !LobbyEntered;
+        }
+    }
+
+    public bool CannotEnterLobby
+    {
+        get
+        {
+            return LobbyEntered || InvalidForm;
+        }
+    }
+
+    protected WaitingRoomViewModel _viewModel = new WaitingRoomViewModel();
+
+    public string GLOBAL_FOO = "FOO";
+
+    //public string _currentlySelectedFighterId = "";
+    private List<Fighter> _contestants = new List<Fighter>();
+    private Fighter[] _playerFighters;
+    string message = null;
+    List<Message> messages = new List<Message>();
+
+    ChatClient _chatClient = null;
+
+    //string _chatClientId;
+
+    List<string> _challengerIDs = new List<string>();   //fighters that have challenged me
+    List<string> _challengeeIDs = new List<string>();   //fighters that i have challenged
+
+    int _balance = 0;
+
+    public void addFighter()
+    {
+
+        var newFighetr = new Fighter() { Name = "asdsad", Picture = "fig1.png", id = "asdasddsaasd" };
+
+        _contestants.Add(newFighetr);
+
+        GLOBAL_FOO = newFighetr.Name;
+
+        StateHasChanged();
+    }
+
+    //public async Task GetCurrentFighterIdFromDOM()
+    //{
+    //    var currentlySelectedFighterId = await JSRuntime.InvokeAsync<string>(
+    //    "botBFunctions.getSelectedFighterId");
+    //    _currentlySelectedFighterId = currentlySelectedFighterId;
+    //}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+            getPlayerBalance();
+            _playerFighters = await http.GetFromJsonAsync<Fighter[]>("Lobby/PlayerFighters");
+
+            var playerFighterList = new List<dynamic>();
+            foreach (Fighter playerFighter in _playerFighters)
+            {
+                var newFighter = new
+                {
+                    text = playerFighter.Name,
+                    value = playerFighter.id,
+                    selected = false,
+                    description = "",
+                    imageSrc = "/images/" + playerFighter.Picture
+                };
+
+                playerFighterList.Add(newFighter);
+            }
+
+            //await JSRuntime.InvokeVoidAsync("jsInterop.initializeFightersDropDown", System.Text.Json.JsonSerializer.Serialize(playerFighterList));
+            await JSRuntime.InvokeVoidAsync("botBFunctions.initializeFightersDropDown", System.Text.Json.JsonSerializer.Serialize(playerFighterList));
+
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+
+            _contestants = await http.GetFromJsonAsync<List<Fighter>>("Lobby/Combatants");
+
+            //_chatClientId = Guid.NewGuid().ToString();
+            _chatClient = new ChatClient(_viewModel.MyFighter.ownerId, navigationManager);
+            _chatClient.MessageReceived += MessageReceived;
+            _chatClient.LobbyExited += LobbyExited;
+            _chatClient.Challenged += Challenged;
+            _chatClient.ChallengeAccepted += ChallengeAccepted;
+
+            // Console.WriteLine("Index:chat starting...");
+            await _chatClient.StartAsync();
+            // Console.WriteLine("Index:chat starting?");
+
+            //var response = await http.GetFromJsonAsync("Lobby/Combatants");
+            //_contestants = response.Content.ReadFromJsonAsync<Fighter[]>().Result;
+
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    void MessageReceived(object sender, MessageReceivedEventArgs e)
+    {
+
+        Fighter newFighter = System.Text.Json.JsonSerializer.Deserialize<Fighter>(e.MessageContent);
+
+        //  Console.WriteLine($"Blazor: receive {e.MessageType} : {e.MessageContent}");
+        bool isMine = false;
+        if (!string.IsNullOrWhiteSpace(newFighter.ownerEmail))
+        {
+            isMine = string.Equals(newFighter.ownerEmail, "username", StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        //var newMsg = new Message(newFighter.ownerEmail, e.Message, isMine);
+        //messages.Add(newMsg);
+        //StateHasChanged();
+
+        _contestants.Add(newFighter);
+
+        //GLOBAL_FOO = newFighetr.Name;
+
+        StateHasChanged();
+
+    }
+
+    void LobbyExited(object sender, LobbyExitedEventArgs e)
+    {
+
+        Fighter fighterToRemove = System.Text.Json.JsonSerializer.Deserialize<Fighter>(e.MessageContent);
+        _contestants.RemoveAll(x => x.id == fighterToRemove.id);
+        _challengeeIDs.Remove(fighterToRemove.id);
+        _challengerIDs.Remove(fighterToRemove.id);
+
+        StateHasChanged();
+
+    }
+
+
+    void Challenged(object sender, ChallengedEventArgs e)
+    {
+        // Console.WriteLine(e.MessageContent);
+        Fighter challengingFighter = System.Text.Json.JsonSerializer.Deserialize<Fighter>(e.MessageContent);
+        _challengerIDs.Add(challengingFighter.id);
+        StateHasChanged();
+
+    }
+
+    void ChallengeAccepted(object sender, ChallengeAcceptedEventArgs e)
+    {
+        //   Console.WriteLine("", "BEGIN FIGHT! ", e.MessageContent);
+        NavigationManager.NavigateTo($"theBridge/{e.MessageContent}");
+
+    }
+
+    async Task EnterLobby()
+    {
+        try
+        {
+
+            //await GetCurrentFighterIdFromDOM();
+
+            //Fighter selectedFighter = _playerFighters.Where(x => x.id == _currentlySelectedFighterId).First();
+            //selectedFighter.ownerId = _chatClientId;
+
+
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+            var response = await http.PostAsJsonAsync("Lobby/EnterLobby", System.Text.Json.JsonSerializer.Serialize(_viewModel.MyFighter));
+
+        }
+        catch (Exception e)
+        {
+            message = $"ERROR: Failed to start EnterLobby {e.Message}";
+            //    Console.WriteLine(e.Message);
+            //    Console.WriteLine(e.StackTrace);
+        }
+    }
+
+    async Task ExitLobby()
+    {
+        try
+        {
+            _challengeeIDs.Clear();
+            _challengerIDs.Clear();
+
+            //await GetCurrentFighterIdFromDOM();
+
+            //Fighter selectedFighter = _playerFighters.Where(x => x.id == _currentlySelectedFighterId).First();
+
+
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+            var response = await http.PostAsJsonAsync("Lobby/ExitLobby", System.Text.Json.JsonSerializer.Serialize(_viewModel.MyFighter));
+
+            StateHasChanged();
+        }
+
+        catch (Exception e)
+        {
+            message = $"ERROR: Failed to start EnterLobby {e.Message}";
+            //   Console.WriteLine(e.Message);
+            //  Console.WriteLine(e.StackTrace);
+        }
+    }
+
+    async Task Challenge(string fighterId)
+    {
+        try
+        {
+
+            Fighter challengedFighter = _contestants.Where(x => x.id == fighterId).First();
+
+            string serializedFighter = System.Text.Json.JsonSerializer.Serialize(challengedFighter);
+            ExpandoObject expandoObject = JsonConvert.DeserializeObject<ExpandoObject>(serializedFighter, new ExpandoObjectConverter());
+
+            var ChallengerFighterId = "ChallengerFighterId";
+            //((IDictionary<string, object>)expandoObject)[ChallengerFighterId] = _currentlySelectedFighterId;
+            ((IDictionary<string, object>)expandoObject)[ChallengerFighterId] = _viewModel.MyFighter.id;
+
+
+            serializedFighter = System.Text.Json.JsonSerializer.Serialize(expandoObject);
+
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+            var response = await http.PostAsJsonAsync("Lobby/Challenge", serializedFighter);
+
+            _challengeeIDs.Add(challengedFighter.id);
+            StateHasChanged();
+        }
+
+        catch (Exception e)
+        {
+            message = $"ERROR: Failed to start EnterLobby {e.Message}";
+            //   Console.WriteLine(e.Message);
+            //   Console.WriteLine(e.StackTrace);
+        }
+    }
+
+    async Task AcceptChallenge(string fighterId)
+    {
+        try
+        {
+
+            Fighter challengingFighter = _contestants.Where(x => x.id == fighterId).First();
+
+            string serializedFighter = System.Text.Json.JsonSerializer.Serialize(challengingFighter);
+            ExpandoObject expandoObject = JsonConvert.DeserializeObject<ExpandoObject>(serializedFighter, new ExpandoObjectConverter());
+
+            var challengingFighterId = "ChallengerFighterId";
+            //((IDictionary<string, object>)expandoObject)[challengingFighterId] = _currentlySelectedFighterId;
+            ((IDictionary<string, object>)expandoObject)[challengingFighterId] = _viewModel.MyFighter.id;
+            ((IDictionary<string, object>)expandoObject)["PlayerId"] = _viewModel.MyFighter.ownerId;
+
+            serializedFighter = System.Text.Json.JsonSerializer.Serialize(expandoObject);
+
+            var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+            var response = await http.PostAsJsonAsync("Lobby/AcceptChallenge", serializedFighter);
+
+            //_challengeeIDs.Add(challengingFighter.id);
+            //StateHasChanged();
+        }
+
+        catch (Exception e)
+        {
+            message = $"ERROR: Failed to start EnterLobby {e.Message}";
+            //    Console.WriteLine(e.Message);
+            //   Console.WriteLine(e.StackTrace);
+        }
+    }
+
+    private async void getPlayerBalance()
+    {
+        //_balance = 150;
+        //return;
+
+        var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
+        _balance = await http.GetFromJsonAsync<int>("FighterMaintenance/GetPlayerBalance");
+        //_balance = balance;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            ExitLobby();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+    }
+
+    class Message
+    {
+
+        public Message(string username, string body, bool mine)
+        {
+            Username = username;
+            Body = body;
+            Mine = mine;
+        }
+
+        public string Username { get; set; }
+        public string Body { get; set; }
+        public bool Mine { get; set; }
+
+        public string CSS
+        {
+            get
+            {
+                return Mine ? "sent" : "received";
+            }
+        }
+    }
+
+}
+
+
+
+
