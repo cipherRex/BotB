@@ -13,7 +13,7 @@ namespace BotB.Shared.CombatManagement.CombatInstanceResolvers
 
     public abstract class CombatInstanceResolverBase: ICombatInstanceResolver
     {
-        const int MAX_POINTS = 15;
+        const int MAX_POINTS = 10;
 
         protected CombatSession _combatSession;
 
