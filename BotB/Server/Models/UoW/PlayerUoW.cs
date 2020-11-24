@@ -44,7 +44,7 @@ namespace BotB.Server.Models.UoW
 
         public void EndGame(string WinningFighterId, string LosingFighterId) 
         {
-            _iDAL.DeleteFighterAsync(LosingFighterId);
+           // _iDAL.DeleteFighterAsync(LosingFighterId);
 
             
 

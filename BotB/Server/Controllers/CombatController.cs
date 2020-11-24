@@ -60,17 +60,17 @@ namespace BotB.Server.Controllers
                     using (IDbConnection dbConnection =
                           DbProviderFactories.GetFactory("system.data.sqlclient").CreateConnection())
                     {
-                        dbConnection.ConnectionString = "Server=tcp:cipherrex.database.windows.net,1433;Initial Catalog=cipherRexUmbraco;Persist Security Info=False;User ID=cipherrex;Password=R00ksp@wnR00ksp@wn;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-                        dbConnection.Open();
-                        Models.DAL.SqlDAL sqlDAL = new Models.DAL.SqlDAL(dbConnection);
+                        //dbConnection.ConnectionString = "Server=tcp:cipherrex.database.windows.net,1433;Initial Catalog=cipherRexUmbraco;Persist Security Info=False;User ID=cipherrex;Password=R00ksp@wnR00ksp@wn;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+                        //dbConnection.Open();
+                        //Models.DAL.SqlDAL sqlDAL = new Models.DAL.SqlDAL(dbConnection);
 
-                        IPlayerRepo playerRepo = new PlayerRepo(sqlDAL);
-                        PlayerUoW playerUoW = new PlayerUoW(sqlDAL, playerRepo);
+                        //IPlayerRepo playerRepo = new PlayerRepo(sqlDAL);
+                        //PlayerUoW playerUoW = new PlayerUoW(sqlDAL, playerRepo);
 
-                        playerUoW.EndGame(
-                            result.Victory.VictorFighterId,
-                            thisCombatSession.Fighters.Where(x => x.Key != result.Victory.VictorFighterId).FirstOrDefault().Key 
-                            );
+                        //playerUoW.EndGame(
+                        //    result.Victory.VictorFighterId,
+                        //    thisCombatSession.Fighters.Where(x => x.Key != result.Victory.VictorFighterId).FirstOrDefault().Key 
+                        //    );
 
                     }
 
