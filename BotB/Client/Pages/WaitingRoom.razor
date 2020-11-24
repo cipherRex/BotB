@@ -98,44 +98,59 @@
         display: block;
     }
 
-        @@keyframes challengeKeyFrame {
-            from {
-                background-color: transparent;
-            }
-
-            to {
-                background-color: red;
-            }
+    @@keyframes challengeKeyFrame 
+    {
+        from {
+            background-color: transparent;
         }
 
-        .challengeIcon {
-            transition: 200ms ease-in-out;
+        to {
             background-color: red;
-            animation-name: challengeKeyFrame;
-            animation-duration: 2s;
         }
+    }
 
-        @@keyframes leaveLobbyKeyFrame {
-            from {
-                background-color: transparent;
-            }
+    .challengeIcon 
+    {
+        transition: 200ms ease-in-out;
+        background-color: red;
+        animation-name: challengeKeyFrame;
+        animation-duration: 2s;
+    }
 
-            to {
-                background-color: green;
-            }
-        }
-
-        .leaveLobbyIcon {
-            transition: 200ms ease-in-out;
-            background-color: green;
-            animation-name: leaveLobbyKeyFrame;
-            animation-duration: 2s;
-        }
-
-        .actionButton
+    @@keyframes leaveLobbyKeyFrame {
+        from 
         {
-            padding:5px;
+            background-color: transparent;
         }
+
+        to 
+        {
+            background-color: green;
+        }
+    }
+
+    .leaveLobbyIcon {
+        transition: 200ms ease-in-out;
+        background-color: green;
+        animation-name: leaveLobbyKeyFrame;
+        animation-duration: 2s;
+    }
+
+    .actionButton
+    {
+        padding:5px;
+    }
+
+    .glowing-border {
+        border: 2px solid #dadada;
+        border-radius: 7px;
+    }
+
+    .glowing-border:hover:enabled {
+        outline: none;
+        border-color: gold;
+        box-shadow: 0 0 10px gold;
+    }
     </style>
 
 
@@ -191,7 +206,7 @@
                                             @*<button class="btn btn-danger btn-sm" @onclick="@Challenge">Challenge</button>*@
                                             @if (_challengerIDs.Contains(fighter.id))
                                             {
-                                            <button class="actionButton challengeIcon" @onclick="@(async () => await AcceptChallenge(fighter.id))">
+                                            <button class="glowing-border actionButton challengeIcon" @onclick="@(async () => await AcceptChallenge(fighter.id))">
                                                 <span>
                                                     <i class="ra-2x ra ra-crossed-swords"></i>
                                                 </span>
@@ -208,14 +223,14 @@
                                             //else if (fighter.id != _currentlySelectedFighterId)
                                             else if (fighter.id != _viewModel.MyFighter.id)
                                             {
-                                                <button class="actionButton challengeIcon" type="button" disabled="@NoChallengeAllowed"  @onclick="@(async () => await Challenge(fighter.id))">
+                                                <button class="glowing-border actionButton challengeIcon" type="button" disabled="@NoChallengeAllowed"  @onclick="@(async () => await Challenge(fighter.id))">
                                                     <i class=" ra-2x ra ra-sword"></i>                                               
                                                 </button>
                                             }
 
                                             else
                                             {
-                                                <button class="actionButton leaveLobbyIcon" id="enterButton" @onclick="@ExitLobby">
+                                                <button class="glowing-border actionButton leaveLobbyIcon" id="enterButton" @onclick="@ExitLobby">
                                                     <i class="lobbyIcon fas fa-2x fa-sign-out-alt"></i>
                                                 </button>
                                             }
@@ -479,6 +494,8 @@
     {
         try
         {
+            _challengeeIDs.Clear();
+            _challengerIDs.Clear();
 
             //await GetCurrentFighterIdFromDOM();
 
@@ -488,6 +505,7 @@
             var http = HttpClientFactory.CreateClient("BotB.AnonymousAPI");
             var response = await http.PostAsJsonAsync("Lobby/ExitLobby", System.Text.Json.JsonSerializer.Serialize(_viewModel.MyFighter));
 
+            StateHasChanged();
         }
 
         catch (Exception e)
